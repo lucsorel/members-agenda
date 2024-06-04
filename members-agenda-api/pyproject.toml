@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "members-agenda-api"
+version = "0.1.0"
+description = ""
+authors = ["Luc Sorel-Giffo"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.111.0"
+niquests = "^3.6.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
