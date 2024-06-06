@@ -26,14 +26,27 @@ const timeGridLabels = ref(
         endHour
     ].map(hour => hour % 1 == 0 ? {hour: hour, paddedHour: pad2(hour), paddedMinute: '00'}: {hour: Math.trunc(hour), paddedHour: pad2(Math.trunc(hour)), paddedMinute: '30'})
 )
-
-const tracksNumber = 4
+class Venue {
+  constructor(rank, name) {
+      this.rank = rank
+      this.name = name
+  }
+}
+const venues = [
+    new Venue(1, 'Amphi 1'),
+    new Venue(2, 'Amphi 2'),
+    new Venue(3, 'Amphi 3'),
+    new Venue(4, 'Amphi 4'),
+]
+const ranksByVenueName = venues.reduce((agg, venue) => ({...agg, [venue.name]: venue.rank}), {})
+const tracksNumber = venues.length
 const tracksGridColumns = [
     '[times] 4em',
     '[track-1-start] 1fr',
     ...range(tracksNumber - 1, 1).map(trackIndex => `[track-${trackIndex}-end track-${trackIndex + 1}-start] 1fr`),
     `[track-${tracksNumber}-end] 1fr`
 ]
+const tracks = ref(venues)
 const timeGridColumnsCSS = ref(tracksGridColumns.reduce((css, tracksGridColumn) => `${css} ${tracksGridColumn}`))
 </script>
 
@@ -41,10 +54,7 @@ const timeGridColumnsCSS = ref(tracksGridColumns.reduce((css, tracksGridColumn) 
     <h2 id="schedule-heading">BreizhCamp members agenda</h2>
     <div class="schedule">
 
-        <span class="track-slot" aria-hidden="true" style="grid-column: track-1; grid-row: tracks;">Track 1</span>
-        <span class="track-slot" aria-hidden="true" style="grid-column: track-2; grid-row: tracks;">Track 2</span>
-        <span class="track-slot" aria-hidden="true" style="grid-column: track-3; grid-row: tracks;">Track 3</span>
-        <span class="track-slot" aria-hidden="true" style="grid-column: track-4; grid-row: tracks;">Track 4</span>
+        <span v-for="track in tracks" :key="track.id" class="track-slot" aria-hidden="true" :style="`grid-column: track-${track.rank}; grid-row: tracks;`">{{track.name}}</span>
 
         <h2 v-for="timeGridLabel in timeGridLabels" class="time-slot" :style="`grid-row: time-${timeGridLabel.paddedHour}${timeGridLabel.paddedMinute};`">{{timeGridLabel.hour}}:{{timeGridLabel.paddedMinute}}</h2>
        
