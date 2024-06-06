@@ -1,0 +1,22 @@
+{
+  "name": "members-agenda",
+  "version": "0.1.0",
+  "description": "Dispatch team members in the agenda of a conference",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucsorel/members-agenda.git"
+  },
+  "author": "Luc Sorel-Giffo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucsorel/members-agenda/issues"
+  },
+  "homepage": "https://github.com/lucsorel/members-agenda#readme",
+  "dependencies": {
+    "vite": "^5.2.12"
+  }
+}
