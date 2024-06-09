@@ -12,3 +12,4 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 - https://css-tricks.com/building-a-conference-schedule-with-css-grid/
 - https://vuejs.org/api/sfc-css-features.html#v-bind-in-css
 - https://learnvue.co/articles/reactive-styles-vue-3
+- https://jasonwatmore.com/vue-3-vite-add-path-alias-to-src-in-vite-config
