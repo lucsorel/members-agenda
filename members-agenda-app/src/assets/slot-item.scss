@@ -1,0 +1,89 @@
+.session {
+    padding: .5em;
+    border-radius: 2px;
+    font-size: 14px;
+    background-color: #AAA;
+    box-shadow:
+      rgba(255,255,255,.6) 1px 1px 0,
+      rgba(0,0,0,.3) 4px 4px 0;
+}
+
+.session-title,
+.session-time,
+.session-track,
+.session-members-needed {
+    display: block;
+}
+
+.session-title,
+.time-slot {
+    margin: 0;
+    font-size: 1em;
+}
+.session-track,
+.session-members-needed {
+    font-size: 0.75em;
+}
+
+.session-title a {
+color: #fff;
+text-decoration-style: dotted;
+
+&:hover {
+    font-style: italic;
+}
+
+&:focus {
+    outline: 2px dotted rgba(255,255,255,.8);
+}
+}
+.track-1 {
+    background-color: #005F73;
+    color: #fff;
+}
+
+.track-2 {
+    background-color: #2D8289;
+    color: #fff;
+}
+
+.track-3 {
+    background-color: #59A49F;
+    color: #fff;
+}
+
+.track-4 {
+    background-color: #8E3089;
+    color: #fff;
+}
+
+.track-5 {
+    background-color: #9C5679;
+    color: #fff;
+}
+
+.track-6 {
+    background-color: #AB7C69;
+    color: #fff;
+}
+
+.track-7 {
+    background-color: #B9A158;
+    color: #fff;
+}
+
+.track-8 {
+    background-color: #C7C748;
+    color: #fff;
+}
+
+.track-9 {
+    background-color: #023E8A;
+    color: #fff;
+}
+
+.track-10 {
+    background-color: #015199;
+    color: #fff;
+}  
+  

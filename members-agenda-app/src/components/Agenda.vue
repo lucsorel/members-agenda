@@ -5,6 +5,8 @@ import { range, pad2, toGridRow } from '@/domain/grid'
 import jsonSlots from '@/domain/slots.json'
 import jsonVenues from '@/domain/venues.json'
 
+import SlotItem from '@/components/SlotItem.vue'
+
 const venues = jsonVenues.map(Venue.fromJson)
 const ranksByVenueName = venues.reduce((agg, venue) => ({...agg, [venue.name]: venue.rank}), {})
 
@@ -55,12 +57,7 @@ const timeGridSlots = ref(slots)
 
         <h2 v-for="timeGridLabel in timeGridLabels" class="time-slot" :style="`grid-row: time-${timeGridLabel.paddedHour}${timeGridLabel.paddedMinute};`">{{timeGridLabel.hour}}:{{timeGridLabel.paddedMinute}}</h2>
        
-        <div v-for="timeGridSlot in timeGridSlots" :class="`session track-${timeGridSlot.rank}`" :style="`grid-column: track-${timeGridSlot.rank}; grid-row: ${timeGridSlot.gridRowStart} / ${timeGridSlot.gridRowEnd};`">
-            <h3 class="session-title"><a href="#">{{ timeGridSlot.name }}</a></h3>
-            <span class="session-time">{{ timeGridSlot.startHour }}:{{ timeGridSlot.startMinute }} - {{ timeGridSlot.endHour }}:{{ timeGridSlot.endMinute }}</span>
-            <span class="session-track">({{ timeGridSlot.venue }})</span>
-            <span class="session-track">{{ timeGridSlot.members.length }} / {{ timeGridSlot.membersNeededMin }}</span>
-        </div>
+        <SlotItem v-for="timeGridSlot in timeGridSlots" :key="timeGridSlot.id" :slot="timeGridSlot" />
     </div>
 </template>
 

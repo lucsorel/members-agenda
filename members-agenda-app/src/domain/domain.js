@@ -1,7 +1,14 @@
-import { toGridRow, pad2 } from '@/domain/grid'
+import { toGridRow } from '@/domain/grid'
+
+// generates a kind of unique id based on the contents provided
+function hash(...values) {
+    const contents = values.reduce((text, value) => `${text}${value}`, '')
+    return contents.split('').reduce((hash, character) => (((hash << 5) - hash) + character) | 0, 0)
+}
 
 export class Slot{
     constructor(name, day, startTime, endTime, venue, rank, membersNeededMin, members=[], sessions=[]) {
+        this.id = hash(name, day, startTime, endTime, venue, rank, membersNeededMin)
         this.name = name;
         this.day = day;
         [this.startHour, this.startMinute] = startTime.split(':');
@@ -36,6 +43,7 @@ export class Slot{
 
 export class Venue {
     constructor(rank, name) {
+        this.id = hash(rank, name)
         this.rank = rank
         this.name = name
     }
