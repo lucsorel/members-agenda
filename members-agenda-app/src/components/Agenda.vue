@@ -42,16 +42,16 @@ const tracksGridColumns = [
     ...range(tracksNumber - 1, 1).map(trackIndex => `[track-${trackIndex}-end track-${trackIndex + 1}-start] 1fr`),
     `[track-${tracksNumber}-end] 1fr`
 ]
-const tracks = ref(venues)
+const timeGridVenues = ref(venues)
 const timeGridColumnsCSS = ref(tracksGridColumns.reduce((css, tracksGridColumn) => `${css} ${tracksGridColumn}`))
 const timeGridSlots = ref(slots)
 </script>
 
 <template>
     <h2 id="schedule-heading">BreizhCamp members agenda</h2>
-    <div class="schedule">
 
-        <span v-for="track in tracks" :key="track.id" class="track-slot" aria-hidden="true" :style="`grid-column: track-${track.rank}; grid-row: tracks;`">{{track.name}}</span>
+    <div class="schedule">
+        <span v-for="timeGridVenue in timeGridVenues" :key="timeGridVenue.id" class="track-slot" aria-hidden="true" :style="`grid-column: track-${timeGridVenue.rank}; grid-row: tracks;`">{{timeGridVenue.name}}</span>
 
         <h2 v-for="timeGridLabel in timeGridLabels" class="time-slot" :style="`grid-row: time-${timeGridLabel.paddedHour}${timeGridLabel.paddedMinute};`">{{timeGridLabel.hour}}:{{timeGridLabel.paddedMinute}}</h2>
        
@@ -70,7 +70,7 @@ const timeGridSlots = ref(slots)
 @media screen and (min-width:700px) {
     .schedule {
       display: grid;
-      grid-gap: 1em;
+      grid-gap: 0.5em;
       grid-auto-rows: 0;
       grid-template-rows: v-bind(timeGridRowsCSS);
       grid-template-columns: v-bind(timeGridColumnsCSS);
