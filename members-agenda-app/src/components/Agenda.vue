@@ -6,6 +6,7 @@ import jsonSlots from '@/domain/slots.json'
 import jsonVenues from '@/domain/venues.json'
 
 import SlotItem from '@/components/SlotItem.vue'
+import AddMemberModal from '@/components/AddMemberModal.vue'
 
 const venues = jsonVenues.map(Venue.fromJson)
 const ranksByVenueName = venues.reduce((agg, venue) => ({...agg, [venue.name]: venue.rank}), {})
@@ -47,6 +48,19 @@ const tracksGridColumns = [
 const timeGridVenues = ref(venues)
 const timeGridColumnsCSS = ref(tracksGridColumns.reduce((css, tracksGridColumn) => `${css} ${tracksGridColumn}`))
 const timeGridSlots = ref(slots)
+
+const isModalOpened = ref(false);
+
+const openModal = () => {
+  isModalOpened.value = true
+}
+const closeModal = () => {
+  isModalOpened.value = false
+}
+
+const submitHandler = ()=> {
+    console.log("modal submission")
+}
 </script>
 
 <template>
@@ -59,6 +73,15 @@ const timeGridSlots = ref(slots)
        
         <SlotItem v-for="timeGridSlot in timeGridSlots" :key="timeGridSlot.id" :slot="timeGridSlot" />
     </div>
+
+    <div>
+        <button @click="openModal">Open modal</button>
+    </div>
+
+    <AddMemberModal :isOpen="isModalOpened" @modal-close="closeModal" @submit="submitHandler" name="first-modal">
+        <template #header>Manage team members on a slot</template>
+        <template #content>Display available team members</template>
+    </AddMemberModal>
 </template>
 
 <style scoped>
