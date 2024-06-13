@@ -74,8 +74,9 @@ INSERT INTO `venues` (`id`, `name`, `rank`, `bg_color_hex`) VALUES
 (6, 'Amphi C', 6, 'AB7C69'),
 (7, 'Amphi D', 7, 'B9A158'),
 (8, 'Amphi E', 8, 'C7C748'),
-(9, 'Prestataires', 9, '023E8A'),
-(10, 'Divers', 10, '015199');
+(9, 'Restauration', 9, '43AA8B'),
+(10, 'Prestataires', 10, '023E8A'),
+(11, 'Divers', 11, '015199');
 
 --
 -- Index pour les tables déchargées
@@ -120,7 +121,7 @@ ALTER TABLE `slots`
 -- AUTO_INCREMENT pour la table `venues`
 --
 ALTER TABLE `venues`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'system identifier', AUTO_INCREMENT=11;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'system identifier', AUTO_INCREMENT=12;
 
 --
 -- Contraintes pour les tables déchargées
