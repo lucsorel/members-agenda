@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 
 class Event(BaseModel):
@@ -15,3 +16,11 @@ class Venue(BaseModel):
     name: str
     rank: int
     bg_color_hex: str
+
+class Slot(BaseModel):
+    id: int
+    title: str
+    start: datetime
+    end: datetime
+    venue_id: int
+    needed_members_nb: int

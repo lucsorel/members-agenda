@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from datetime import datetime
 
+from fastapi import APIRouter
 from niquests import get
 
-from members_agenda_api.domain import Event, Venue
+from members_agenda_api.domain import Event, Slot, Venue
 from members_agenda_api.dataservice import get_data_service
 
 API_ROUTER = APIRouter(prefix='/api')
@@ -26,3 +27,11 @@ def get_agenda() -> list[Event]:
 @API_ROUTER.get('/venues')
 def get_venues() -> list[Venue]:
     return get_data_service().get_venues()
+
+@API_ROUTER.get('/slots')
+def get_slots() -> list[Slot]:
+    return get_data_service().get_slots()
+
+@API_ROUTER.get('/slots/intersect')
+def get_intersecting_slots(start: datetime, end: datetime) -> list[Slot]:
+    return get_data_service().get_intersecting_slots(start, end)

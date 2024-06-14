@@ -23,10 +23,10 @@ MEMBERS_AGENDA_PASSWORD=Members-agendA
 
 It will be used both by:
 
-- docker compose to initialize and run the database
+- `docker compose` to initialize and run the database
 - the web application to connect to the database
 
-- test the docker compose config:
+- test the `docker compose` config:
 
 ```sh
 docker compose config
@@ -38,7 +38,7 @@ docker compose config
 docker compose up
 ```
 
-- PhpMyAdmin will be available: http://localhost:8081/
+- PhpMyAdmin will be available at http://localhost:8081/
 
 - stop the phpmyadmin and mysql stack
 
@@ -48,6 +48,24 @@ docker compose down
 
 ## Start the web API
 
+Sources the environment variables and starts the web server on port `8282`:
+
 ```sh
 set -a && source .env && set +a && poetry run uvicorn members_agenda_api.__main__:app --port 8282 --reload
+```
+
+## Endpoints examples
+
+```sh
+# all events
+http://localhost:8282/api/agenda
+
+# all venues
+http://localhost:8282/api/venues
+
+# all slots
+http://localhost:8282/api/slots
+
+# slots that intersect a period of time delimited by start and end datetimes
+http://localhost:8282/api/slots/intersect?start=2024-06-25T09:30:00&end=2024-06-25T10:30:00
 ```
