@@ -2,3 +2,5 @@
 __pycache__/
 .local/
 .env
+# folder where the jebbs.plantuml codium / vsCode extension outputs exported diagram files
+out/

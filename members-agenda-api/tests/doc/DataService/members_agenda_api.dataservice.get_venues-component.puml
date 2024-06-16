@@ -1,0 +1,133 @@
+@startuml members_agenda_api.dataservice.get_venues-component
+skinparam BoxPadding 10
+skinparam componentStyle rectangle
+
+rectangle None #line:transparent;text:transparent {
+  package members_agenda_api {
+    frame dataservice {
+      [members_agenda_api.dataservice.get_venues] as "get_venues" << @trace_to_component_puml >>
+      [members_agenda_api.dataservice._query] as "_query"
+      [members_agenda_api.dataservice._prepared_query] as "_prepared_query"
+    }
+  }
+  package pymysql {
+    frame connections {
+      [pymysql.connections.cursor] as "cursor"
+      [pymysql.connections.query] as "query"
+      [pymysql.connections._execute_command] as "_execute_command"
+      [pymysql.connections._write_bytes] as "_write_bytes"
+      [pymysql.connections._read_query_result] as "_read_query_result"
+      [pymysql.connections.~__init~__] as "~__init~__"
+      [pymysql.connections.read] as "read"
+      [pymysql.connections._read_packet] as "_read_packet"
+      [pymysql.connections._read_bytes] as "_read_bytes"
+      [pymysql.connections._read_result_packet] as "_read_result_packet"
+      [pymysql.connections._get_descriptions] as "_get_descriptions"
+      [pymysql.connections._read_rowdata_packet] as "_read_rowdata_packet"
+      [pymysql.connections._check_packet_is_eof] as "_check_packet_is_eof"
+      [pymysql.connections._read_row_from_packet] as "_read_row_from_packet"
+    }
+    frame cursors {
+      [pymysql.cursors.~__init~__] as "~__init~__"
+      [pymysql.cursors.~__enter~__] as "~__enter~__"
+      [pymysql.cursors.execute] as "execute"
+      [pymysql.cursors.nextset] as "nextset"
+      [pymysql.cursors._nextset] as "_nextset"
+      [pymysql.cursors._get_db] as "_get_db"
+      [pymysql.cursors.mogrify] as "mogrify"
+      [pymysql.cursors._query] as "_query"
+      [pymysql.cursors._clear_result] as "_clear_result"
+      [pymysql.cursors._do_get_result] as "_do_get_result"
+      [pymysql.cursors._conv_row] as "_conv_row"
+      [pymysql.cursors.fetchall] as "fetchall"
+      [pymysql.cursors._check_executed] as "_check_executed"
+      [pymysql.cursors.~__exit~__] as "~__exit~__"
+      [pymysql.cursors.close] as "close"
+    }
+  }
+  package pydantic {
+    frame main {
+      [pydantic.main.~__init~__] as "~__init~__"
+    }
+  }
+}
+[members_agenda_api.dataservice.get_venues] --> [members_agenda_api.dataservice._query] : 1
+[members_agenda_api.dataservice.get_venues] <.. [members_agenda_api.dataservice._query] : 158
+[members_agenda_api.dataservice._query] --> [members_agenda_api.dataservice._prepared_query] : 2
+[members_agenda_api.dataservice._query] <.. [members_agenda_api.dataservice._prepared_query] : 157
+[members_agenda_api.dataservice._prepared_query] -> [pymysql.connections.cursor] : 3
+[members_agenda_api.dataservice._prepared_query] <. [pymysql.connections.cursor] : 6
+[pymysql.connections.cursor] -> [pymysql.cursors.~__init~__] : 4
+[pymysql.connections.cursor] <. [pymysql.cursors.~__init~__] : 5
+[members_agenda_api.dataservice._prepared_query] -> [pymysql.cursors.~__enter~__] : 7
+[members_agenda_api.dataservice._prepared_query] <. [pymysql.cursors.~__enter~__] : 8
+[members_agenda_api.dataservice._prepared_query] -> [pymysql.cursors.execute] : 9
+[members_agenda_api.dataservice._prepared_query] <. [pymysql.cursors.execute] : 142
+[pymysql.cursors.execute] --> [pymysql.cursors.nextset] : 10
+[pymysql.cursors.execute] <.. [pymysql.cursors.nextset] : 15
+[pymysql.cursors.nextset] --> [pymysql.cursors._nextset] : 11, 150
+[pymysql.cursors.nextset] <.. [pymysql.cursors._nextset] : 14, 153
+[pymysql.cursors._nextset] --> [pymysql.cursors._get_db] : 12, 151
+[pymysql.cursors._nextset] <.. [pymysql.cursors._get_db] : 13, 152
+[pymysql.cursors.execute] --> [pymysql.cursors.mogrify] : 16
+[pymysql.cursors.execute] <.. [pymysql.cursors.mogrify] : 19
+[pymysql.cursors.mogrify] --> [pymysql.cursors._get_db] : 17
+[pymysql.cursors.mogrify] <.. [pymysql.cursors._get_db] : 18
+[pymysql.cursors.execute] --> [pymysql.cursors._query] : 20
+[pymysql.cursors.execute] <.. [pymysql.cursors._query] : 141
+[pymysql.cursors._query] --> [pymysql.cursors._get_db] : 21
+[pymysql.cursors._query] <.. [pymysql.cursors._get_db] : 22
+[pymysql.cursors._query] --> [pymysql.cursors._clear_result] : 23
+[pymysql.cursors._query] <.. [pymysql.cursors._clear_result] : 24
+[pymysql.cursors._query] -> [pymysql.connections.query] : 25
+[pymysql.cursors._query] <. [pymysql.connections.query] : 126
+[pymysql.connections.query] --> [pymysql.connections._execute_command] : 26
+[pymysql.connections.query] <.. [pymysql.connections._execute_command] : 29
+[pymysql.connections._execute_command] --> [pymysql.connections._write_bytes] : 27
+[pymysql.connections._execute_command] <.. [pymysql.connections._write_bytes] : 28
+[pymysql.connections.query] --> [pymysql.connections._read_query_result] : 30
+[pymysql.connections.query] <.. [pymysql.connections._read_query_result] : 125
+[pymysql.connections._read_query_result] --> [pymysql.connections.~__init~__] : 31
+[pymysql.connections._read_query_result] <.. [pymysql.connections.~__init~__] : 32
+[pymysql.connections._read_query_result] --> [pymysql.connections.read] : 33
+[pymysql.connections._read_query_result] <.. [pymysql.connections.read] : 124
+[pymysql.connections.read] --> [pymysql.connections._read_packet] : 34
+[pymysql.connections.read] <.. [pymysql.connections._read_packet] : 39
+[pymysql.connections._read_packet] --> [pymysql.connections._read_bytes] : 35, 37, 43 ... 107, 115, 117
+[pymysql.connections._read_packet] <.. [pymysql.connections._read_bytes] : 36, 38, 44 ... 108, 116, 118
+[pymysql.connections.read] --> [pymysql.connections._read_result_packet] : 40
+[pymysql.connections.read] <.. [pymysql.connections._read_result_packet] : 123
+[pymysql.connections._read_result_packet] --> [pymysql.connections._get_descriptions] : 41
+[pymysql.connections._read_result_packet] <.. [pymysql.connections._get_descriptions] : 72
+[pymysql.connections._get_descriptions] --> [pymysql.connections._read_packet] : 42, 48, 54, 60, 66
+[pymysql.connections._get_descriptions] <.. [pymysql.connections._read_packet] : 47, 53, 59, 65, 71
+[pymysql.connections._read_result_packet] --> [pymysql.connections._read_rowdata_packet] : 73
+[pymysql.connections._read_result_packet] <.. [pymysql.connections._read_rowdata_packet] : 122
+[pymysql.connections._read_rowdata_packet] --> [pymysql.connections._read_packet] : 74, 84, 94, 104, 114
+[pymysql.connections._read_rowdata_packet] <.. [pymysql.connections._read_packet] : 79, 89, 99, 109, 119
+[pymysql.connections._read_rowdata_packet] --> [pymysql.connections._check_packet_is_eof] : 80, 90, 100, 110, 120
+[pymysql.connections._read_rowdata_packet] <.. [pymysql.connections._check_packet_is_eof] : 81, 91, 101, 111, 121
+[pymysql.connections._read_rowdata_packet] --> [pymysql.connections._read_row_from_packet] : 82, 92, 102, 112
+[pymysql.connections._read_rowdata_packet] <.. [pymysql.connections._read_row_from_packet] : 83, 93, 103, 113
+[pymysql.cursors._query] --> [pymysql.cursors._do_get_result] : 127
+[pymysql.cursors._query] <.. [pymysql.cursors._do_get_result] : 140
+[pymysql.cursors._do_get_result] -> [pymysql.cursors._do_get_result] : 128
+[pymysql.cursors._do_get_result] --> [pymysql.cursors._get_db] : 129
+[pymysql.cursors._do_get_result] <.. [pymysql.cursors._get_db] : 130
+[pymysql.cursors._do_get_result] --> [pymysql.cursors._conv_row] : 132, 134, 136, 138
+[pymysql.cursors._do_get_result] <.. [pymysql.cursors._conv_row] : 133, 135, 137, 139
+[members_agenda_api.dataservice._prepared_query] -> [pymysql.cursors.fetchall] : 143
+[members_agenda_api.dataservice._prepared_query] <. [pymysql.cursors.fetchall] : 146
+[pymysql.cursors.fetchall] --> [pymysql.cursors._check_executed] : 144
+[pymysql.cursors.fetchall] <.. [pymysql.cursors._check_executed] : 145
+[members_agenda_api.dataservice._prepared_query] -> [pymysql.cursors.~__exit~__] : 147
+[members_agenda_api.dataservice._prepared_query] <. [pymysql.cursors.~__exit~__] : 156
+[pymysql.cursors.~__exit~__] --> [pymysql.cursors.close] : 148
+[pymysql.cursors.~__exit~__] <.. [pymysql.cursors.close] : 155
+[pymysql.cursors.close] --> [pymysql.cursors.nextset] : 149
+[pymysql.cursors.close] <.. [pymysql.cursors.nextset] : 154
+[members_agenda_api.dataservice.get_venues] -> [pydantic.main.~__init~__] : 159, 161, 163, 165
+[members_agenda_api.dataservice.get_venues] <. [pydantic.main.~__init~__] : 160, 162, 164, 166
+
+footer Generated by //pydoctrace//
+@enduml

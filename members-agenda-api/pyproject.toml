@@ -6,12 +6,15 @@ authors = ["Luc Sorel-Giffo"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.12"
 fastapi = "^0.111.0"
-niquests = "^3.6.6"
 pymysql = "^1.1.1"
 cryptography = "^42.0.8"
 
+[tool.poetry.group.dev.dependencies]
+testcontainers = {extras = ["mysql"], version = "^4.5.1"}
+pydoctrace = "^0.3.0"
+pytest = "^8.2.2"
 
 [build-system]
 requires = ["poetry-core"]

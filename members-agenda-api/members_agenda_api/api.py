@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter
-from niquests import get
+from requests import get
 
 from members_agenda_api.domain import Event, Slot, Venue
 from members_agenda_api.dataservice import get_data_service
