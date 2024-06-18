@@ -24,3 +24,8 @@ class Slot(BaseModel):
     end: datetime
     venue_id: int
     needed_members_nb: int
+
+class Person(BaseModel):
+    id: int
+    fullname: str
+    is_member: bool

@@ -69,3 +69,8 @@ http://localhost:8282/api/slots
 # slots that intersect a period of time delimited by start and end datetimes
 http://localhost:8282/api/slots/intersect?start=2024-06-25T09:30:00&end=2024-06-25T10:30:00
 ```
+
+```sh
+# adds member 79 (Luc) to slot 44 (assist Amphi A between 2024-06-27 10:15:00 and 12:30:00)
+curl -X POST "http://127.0.0.1:8282/api/slots/44/add-member?member_id=79"
+```

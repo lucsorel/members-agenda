@@ -5,7 +5,7 @@ from typing import Dict, Iterable, Tuple
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
-from members_agenda_api.domain import Slot, Venue
+from members_agenda_api.domain import Person, Slot, Venue
 
 
 MYSQL_HOST = getenv('MYSQL_HOST', 'localhost')
@@ -19,6 +19,14 @@ ALL_VENUES_QUERY = 'SELECT `id`, `name`, `rank`, `bg_color_hex` FROM `venues`;'
 _SLOTS_FIELDS = '`id`, `title`, `start`, `end`, `venue_id`, `needed_members_nb`'
 ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots`;'
 INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots` WHERE `start` < %(end)s AND `end` > %(start)s;'
+SLOT_WITH_MEMBERS_QUERY = '''
+SELECT `slots`.`id`, `slots`.`title`, `slots`.`start`, `slots`.`end`, `slots`.`venue_id`, `slots`.`needed_members_nb`,
+  `people`.`id` as people_id, `people`.`fullname` as people_fullname, `people`.`is_member` as people_is_member
+FROM `slots`
+LEFT JOIN `slots_members` ON slots.id = slots_members.slot_id
+LEFT JOIN `people` ON slots_members.person_id = people.id
+WHERE `slots`.`id` = %(slot_id)s;
+'''
 
 class DataService:
     def __init__(self, mysql_connection: Connection):
@@ -56,6 +64,32 @@ class DataService:
             Slot(**slot_dict)
             for slot_dict in self._prepared_query(INTERSECTING_SLOTS_QUERY, {"start": start, "end": end})
         ]
+
+    def get_slot_with_members(self, slot_id: int) -> tuple[Slot, tuple[Person]]:
+        slot_with_members = self._prepared_query(SLOT_WITH_MEMBERS_QUERY, {"slot_id": slot_id})
+
+        if len(slot_with_members) == 0:
+            return None, ()
+        
+        first_row = slot_with_members[0]
+        slot = Slot(
+            id=first_row['id'],
+            title=first_row['title'],
+            start=first_row['start'],
+            end=first_row['end'],
+            venue_id=first_row['venue_id'],
+            needed_members_nb=first_row['needed_members_nb'],
+        )
+        return slot, tuple(
+            Person(
+                id=person_id,
+                fullname=slot_member['people_fullname'],
+                is_member=slot_member['people_is_member'] == b'\x01',
+            )
+            for slot_member in slot_with_members
+            if (person_id := slot_member.get('people_id')) is not None
+        )
+
 
 _DATA_SERVICE : DataService = None
 
