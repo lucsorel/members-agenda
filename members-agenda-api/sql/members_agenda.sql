@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql:3306
--- Généré le : lun. 17 juin 2024 à 22:22
+-- Généré le : mar. 18 juin 2024 à 20:34
 -- Version du serveur : 8.0.37
 -- Version de PHP : 8.0.27
 
@@ -275,7 +275,8 @@ INSERT INTO `events_speakers` (`event_id`, `person_id`) VALUES
 (49, 119),
 (44, 120),
 (26, 121),
-(59, 123);
+(59, 123),
+(62, 124);
 
 -- --------------------------------------------------------
 
@@ -353,7 +354,7 @@ INSERT INTO `people` (`id`, `fullname`, `is_member`) VALUES
 (57, 'Harold Favereau', b'0'),
 (58, 'Henri Gauffriau', b'0'),
 (59, 'Hermann Nsounga', b'1'),
-(60, 'Hugo Metivier', b'0'),
+(60, 'Hugo Métivier', b'0'),
 (61, 'Hugues Lepesant', b'0'),
 (62, 'Imryck N/A', b'0'),
 (63, 'Ivan Béthus', b'0'),
@@ -416,7 +417,8 @@ INSERT INTO `people` (`id`, `fullname`, `is_member`) VALUES
 (120, 'Victor Landeau', b'0'),
 (121, 'Vincent Ogloblinsky', b'0'),
 (122, 'Yoann Dubreuil', b'1'),
-(123, 'Youen Garel', b'0');
+(123, 'Youen Garel', b'0'),
+(124, 'Guillaume Lours', b'0');
 
 -- --------------------------------------------------------
 
@@ -550,6 +552,14 @@ CREATE TABLE `slots_members` (
   `person_id` int UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+--
+-- Déchargement des données de la table `slots_members`
+--
+
+INSERT INTO `slots_members` (`slot_id`, `person_id`) VALUES
+(44, 24),
+(44, 99);
+
 -- --------------------------------------------------------
 
 --
@@ -638,7 +648,7 @@ ALTER TABLE `events`
 -- AUTO_INCREMENT pour la table `people`
 --
 ALTER TABLE `people`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'system identifier', AUTO_INCREMENT=124;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'system identifier', AUTO_INCREMENT=125;
 
 --
 -- AUTO_INCREMENT pour la table `slots`
