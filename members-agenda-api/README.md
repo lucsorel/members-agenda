@@ -71,6 +71,22 @@ http://localhost:8282/api/slots/intersect?start=2024-06-25T09:30:00&end=2024-06-
 ```
 
 ```sh
+# person details
+curl http://localhost:8282/api/people/79 -i
+
+curl http://localhost:8282/api/people/-1 -i
+curl http://localhost:8282/api/people/666 -i
+
 # adds member 79 (Luc) to slot 44 (assist Amphi A between 2024-06-27 10:15:00 and 12:30:00)
-curl -X POST "http://127.0.0.1:8282/api/slots/44/add-member?member_id=79"
+curl -X POST "http://127.0.0.1:8282/api/slots/44/add-member?member_id=79" -i
+#{
+#  "message":"person already involved during this period",
+#  "member_slots":[],
+#  "speaker_events":[
+#    {"id":22,"title":"Testcontainers : tu ne douteras plus de tes fonctionnalités, jeune Pydawan·e","start":"2024-06-27T10:30:00","end":"2024-06-27T11:25:00","venue_id":4}
+#  ]
+# }
+
+curl -X POST "http://127.0.0.1:8282/api/slots/44/add-member?member_id=25" -i 
+#{"detail":"Person of id 25 is not a member"}
 ```

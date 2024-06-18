@@ -1,7 +1,9 @@
 from datetime import datetime
+from typing import Iterable
+
 from pydantic import BaseModel
 
-class Event(BaseModel):
+class AgendaEvent(BaseModel):
     id: str
     name: str
     start: str
@@ -10,6 +12,13 @@ class Event(BaseModel):
     venue: str
     venue_id: str|None
     speakers: list[str]
+
+class Event(BaseModel):
+    id: int
+    title: str
+    start: datetime
+    end: datetime
+    venue_id: int
 
 class Venue(BaseModel):
     id: int
@@ -29,3 +38,8 @@ class Person(BaseModel):
     id: int
     fullname: str
     is_member: bool
+
+class AlreadyInvolvedResponse(BaseModel):
+    message: str
+    member_slots: Iterable[Slot]
+    speaker_events: Iterable[Event]
