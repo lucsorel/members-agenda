@@ -21,9 +21,11 @@ export class Slot{
         this.members = members;
         this.sessions = sessions;
     }
+
     decimalStartHour() {
         return Number(this.startHour) + (Number(this.startMinute) / 60)
     }
+
     decimalEndHour() {
         return Number(this.endHour) + (Number(this.endMinute) / 60)
     }
@@ -47,6 +49,7 @@ export class Venue {
         this.rank = rank
         this.name = name
     }
+
     static fromJson(jsonVenue) {
         return new Venue(
             jsonVenue.rank,
