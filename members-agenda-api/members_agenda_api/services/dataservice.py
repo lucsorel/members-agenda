@@ -1,5 +1,4 @@
 from datetime import datetime
-from os import getenv
 from typing import Dict, Iterable, Tuple
 
 from pymysql.connections import Connection
@@ -7,12 +6,6 @@ from pymysql.cursors import DictCursor
 
 from members_agenda_api.domain import Event, Person, Slot, Venue
 
-
-MYSQL_HOST = getenv('MYSQL_HOST', 'localhost')
-MYSQL_PORT = int(getenv('MYSQL_PORT', '6033'))
-MEMBERS_AGENDA_DATABASE = getenv('MEMBERS_AGENDA_DATABASE')
-MEMBERS_AGENDA_USER = getenv('MEMBERS_AGENDA_USER')
-MEMBERS_AGENDA_PASSWORD = getenv('MEMBERS_AGENDA_PASSWORD')
 
 ALL_VENUES_QUERY = 'SELECT `id`, `name`, `rank`, `bg_color_hex` FROM venues;'
 
@@ -143,21 +136,3 @@ class DataService:
     
     def add_member_to_slot(self, person_id: int, slot_id: int) -> int:
         return self._prepared_insert('INSERT INTO `slots_members` (`person_id`, `slot_id`) VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
-        
-
-_DATA_SERVICE : DataService = None
-
-def get_data_service() -> DataService:
-    global _DATA_SERVICE
-    if _DATA_SERVICE is None:
-        _DATA_SERVICE = DataService(
-            Connection(
-                host=MYSQL_HOST,
-                port=MYSQL_PORT,
-                user=MEMBERS_AGENDA_USER,
-                password=MEMBERS_AGENDA_PASSWORD,
-                database=MEMBERS_AGENDA_DATABASE,
-            )
-        )
-    
-    return _DATA_SERVICE

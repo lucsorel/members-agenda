@@ -4,8 +4,7 @@ from fastapi import APIRouter, Response, status
 from requests import get
 
 from members_agenda_api.domain import AgendaEvent, Person, Slot, Venue
-from members_agenda_api.services.dataservice import get_data_service
-from members_agenda_api.services.personservice import get_person_service
+from members_agenda_api.services import get_data_service, get_person_service
 from members_agenda_api.validation import validate_positive_int
 
 

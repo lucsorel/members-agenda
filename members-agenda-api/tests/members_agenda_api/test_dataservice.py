@@ -16,7 +16,7 @@ def test_dataservice_get_venues(monkeypatch, sql_test_helper: SqlTestHelper):
     )
 
     monkeypatch.setattr(
-        'members_agenda_api.dataservice.services.DataService.get_venues',
+        'members_agenda_api.services.dataservice.DataService.get_venues',
         trace_to_component_puml(
             export_file_path_tpl='tests/doc/DataService/${function_module}.${function_name}-component.puml',
             filter_presets=(EXCLUDE_STDLIB_PRESET, FILTER_PYMYSQL_SUBMODULES_PRESET)

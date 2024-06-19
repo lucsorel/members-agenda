@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
 from members_agenda_api.domain import AlreadyInvolvedResponse, Person
-from members_agenda_api.services.dataservice import DataService, get_data_service
+from members_agenda_api.services.dataservice import DataService
 from members_agenda_api.validation import validate_positive_int
 
 class PersonService:
@@ -50,13 +50,3 @@ class PersonService:
 
         # adds the member to the slot
         return self.data_service.add_member_to_slot(member_id, slot_id)
-
-
-_PERSON_SERVICE : PersonService = None
-
-def get_person_service() -> PersonService:
-    global _PERSON_SERVICE
-    if _PERSON_SERVICE is None:
-        _PERSON_SERVICE = PersonService(get_data_service())
-    
-    return _PERSON_SERVICE
