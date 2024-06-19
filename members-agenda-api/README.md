@@ -51,7 +51,7 @@ docker compose down
 Sources the environment variables and starts the web server on port `8282`:
 
 ```sh
-set -a && source .env && set +a && poetry run uvicorn members_agenda_api.__main__:app --port 8282 --reload
+set -a && source .env && set +a && poetry run uvicorn members_agenda_api.__main__:app --host 0.0.0.0 --port 8282 --reload
 ```
 
 ## Endpoints examples
