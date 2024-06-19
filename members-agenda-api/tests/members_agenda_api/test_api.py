@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 
 from members_agenda_api.__main__ import app
-from members_agenda_api.dataservice import DataService
+from members_agenda_api.services.dataservice import DataService
 
 from tests.containers.sql_helper import SqlTestHelper
 from tests.containers.sql_files import SQL_FILES_FOLDER
