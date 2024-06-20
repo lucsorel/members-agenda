@@ -66,6 +66,9 @@ http://localhost:8282/api/venues
 # all slots
 http://localhost:8282/api/slots
 
+# slots within period
+http://localhost:8282/api/slots/in-period?start=2024-06-26T00:00:00&end=2024-06-28T23:59:59
+
 # slots that intersect a period of time delimited by start and end datetimes
 http://localhost:8282/api/slots/intersect?start=2024-06-25T09:30:00&end=2024-06-25T10:30:00
 ```

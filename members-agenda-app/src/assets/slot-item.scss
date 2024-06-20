@@ -2,7 +2,7 @@
     padding: .5em;
     border-radius: 2px;
     font-size: 14px;
-    background-color: #AAA;
+    color: white;
     box-shadow:
       rgba(255,255,255,.6) 1px 1px 0,
       rgba(0,0,0,.3) 4px 4px 0;
@@ -26,64 +26,14 @@
 }
 
 .session-title a {
-color: #fff;
-text-decoration-style: dotted;
-
-&:hover {
-    font-style: italic;
-}
-
-&:focus {
-    outline: 2px dotted rgba(255,255,255,.8);
-}
-}
-.track-1 {
-    background-color: #005F73;
     color: #fff;
-}
+    text-decoration-style: dotted;
 
-.track-2 {
-    background-color: #2D8289;
-    color: #fff;
-}
+    &:hover {
+        font-style: italic;
+    }
 
-.track-3 {
-    background-color: #59A49F;
-    color: #fff;
+    &:focus {
+        outline: 2px dotted rgba(255,255,255,.8);
+    }
 }
-
-.track-4 {
-    background-color: #8E3089;
-    color: #fff;
-}
-
-.track-5 {
-    background-color: #9C5679;
-    color: #fff;
-}
-
-.track-6 {
-    background-color: #AB7C69;
-    color: #fff;
-}
-
-.track-7 {
-    background-color: #B9A158;
-    color: #fff;
-}
-
-.track-8 {
-    background-color: #C7C748;
-    color: #fff;
-}
-
-.track-9 {
-    background-color: #023E8A;
-    color: #fff;
-}
-
-.track-10 {
-    background-color: #015199;
-    color: #fff;
-}  
-  

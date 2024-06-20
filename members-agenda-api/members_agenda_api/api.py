@@ -36,7 +36,12 @@ def get_venues() -> list[Venue]:
 
 @API_ROUTER.get('/slots')
 def get_slots() -> list[Slot]:
-    return get_data_service().get_slots()
+    return get_data_service().get_slots(None)
+
+@API_ROUTER.get('/slots/in-period')
+def get_slots_in_period(start: datetime, end: datetime) -> list[Slot]:
+    period = start, end
+    return get_data_service().get_slots(period)
 
 @API_ROUTER.get('/slots/intersect')
 def get_intersecting_slots(start: datetime, end: datetime) -> list[Slot]:

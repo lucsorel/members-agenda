@@ -15,6 +15,7 @@ _EVENTS_FIELDS = '`id`, `title`, `start`, `end`, `venue_id`'
 # slot-centric queries
 _SLOTS_FIELDS = '`id`, `title`, `start`, `end`, `venue_id`, `needed_members_nb`'
 ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots`;'
+SLOTS_IN_PERIOD_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots` WHERE `start` >= %(start)s AND `end` <= %(end)s;'
 INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots` WHERE `start` < %(end)s AND `end` > %(start)s;'
 
 SLOT_WITH_MEMBERS_QUERY = '''
@@ -79,11 +80,18 @@ class DataService:
             for venue_dict in self._query(ALL_VENUES_QUERY)
         ]
 
-    def get_slots(self) -> list[Slot]:
-        return [
-            Slot(**slot_dict)
-            for slot_dict in self._query(ALL_SLOTS_QUERY)
-        ]
+    def get_slots(self, period: tuple[datetime, datetime] | None) -> list[Slot]:
+        if period is None:
+            return [
+                Slot(**slot_dict)
+                for slot_dict in self._query(ALL_SLOTS_QUERY)
+            ]
+        else:
+            (start, end) = period
+            return [
+                Slot(**slot_dict)
+                for slot_dict in self._prepared_query(SLOTS_IN_PERIOD_QUERY, {"start": start, "end": end})
+            ]
 
     def get_intersecting_slots(self, start: datetime, end: datetime) -> list[Slot]:
         return [

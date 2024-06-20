@@ -7,7 +7,9 @@ const props = defineProps({
 </script>
 
 <template>
-    <div :class="`session track-${slot.rank}`" :style="`grid-column: track-${slot.rank}; grid-row: ${slot.gridRowStart} / ${slot.gridRowEnd};`">
+    <div class="session"
+      :style="`grid-column: track-${slot.rank}; grid-row: ${slot.gridRowStart} / ${slot.gridRowEnd}; background-color: #${slot.bgColorHex}`"
+     >
         <h3 class="session-title"><a href="#">{{ slot.name }}</a></h3>
         <span class="session-time">{{ slot.startHour }}:{{ slot.startMinute }} - {{ slot.endHour }}:{{ slot.endMinute }}</span>
         <span class="session-track">({{ slot.venue }})</span>

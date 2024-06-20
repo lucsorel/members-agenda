@@ -7,8 +7,8 @@ function hash(...values) {
 }
 
 export class Slot{
-    constructor(name, day, startTime, endTime, venue, rank, membersNeededMin, members=[], sessions=[]) {
-        this.id = hash(name, day, startTime, endTime, venue, rank, membersNeededMin)
+    constructor(id, name, day, startTime, endTime, venue, bgColorHex, rank, membersNeededMin, members=[], sessions=[]) {
+        this.id = id
         this.name = name;
         this.day = day;
         [this.startHour, this.startMinute] = startTime.split(':');
@@ -16,6 +16,7 @@ export class Slot{
         this.gridRowStart = toGridRow(Number(this.startHour), Number(this.startMinute));
         this.gridRowEnd = toGridRow(Number(this.endHour), Number(this.endMinute));
         this.venue = venue;
+        this.bgColorHex = bgColorHex;
         this.rank = rank;
         this.membersNeededMin = membersNeededMin;
         this.members = members;
@@ -30,30 +31,39 @@ export class Slot{
         return Number(this.endHour) + (Number(this.endMinute) / 60)
     }
 
-    static fromJson(jsonSlot, ranksByVenueName) {
+    static fromApiJson(jsonSlot, venues, ranksByVenueName) {
+        const [startDay, startTime] = jsonSlot.start.split('T')
+        const [endDay, endTime] = jsonSlot.end.split('T')
+        const venue = venues.find(item => item.id === jsonSlot.venue_id)
+
         return new Slot(
-            jsonSlot.name,
-            jsonSlot.day,
-            jsonSlot.startTime,
-            jsonSlot.endTime,
-            jsonSlot.venue,
-            ranksByVenueName[jsonSlot.venue],
-            jsonSlot.membersNeededMin,
+            jsonSlot.id,
+            jsonSlot.title,
+            startDay,
+            startTime,
+            endTime,
+            venue.name,
+            venue.bgColorHex,
+            ranksByVenueName[venue.name],
+            jsonSlot.needed_members_nb,
         )
     }
 }
 
 export class Venue {
-    constructor(rank, name) {
-        this.id = hash(rank, name)
-        this.rank = rank
+    constructor(id, name, rank, bgColorHex) {
+        this.id = id
         this.name = name
+        this.rank = rank
+        this.bgColorHex = bgColorHex
     }
 
-    static fromJson(jsonVenue) {
+    static fromApiJson(jsonVenue) {
         return new Venue(
-            jsonVenue.rank,
+            jsonVenue.id,
             jsonVenue.name,
+            jsonVenue.rank,
+            jsonVenue.bg_color_hex,
         )
     }
 }
