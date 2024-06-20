@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import APIRouter, Response, status
 from requests import get
 
-from members_agenda_api.domain import AgendaEvent, Person, Slot, Venue
+from members_agenda_api.domain import AgendaEvent, Assignment, Person, Slot, Venue
 from members_agenda_api.services import get_data_service, get_person_service
 from members_agenda_api.validation import validate_positive_int
 
@@ -25,6 +25,10 @@ def get_agenda() -> list[AgendaEvent]:
         )
         for raw_event in get('https://www.breizhcamp.org/json/schedule.json').json()
     ]
+
+@API_ROUTER.get('/people/members')
+def get_members() -> list[Person]:
+    return get_person_service().get_members()
 
 @API_ROUTER.get('/people/{person_id}')
 def get_person(person_id: int) -> Person:
@@ -53,3 +57,12 @@ def add_member_to_slot(slot_id: int, member_id: int, response: Response) -> int:
     validate_positive_int(member_id)
 
     return get_person_service().add_member_to_slot(member_id, slot_id, response)
+
+@API_ROUTER.get('/assignments/in-period')
+def get_assignments_in_period(start: datetime, end: datetime) -> list[Assignment]:
+    period = start, end
+    return get_data_service().get_assignments(period)
+
+@API_ROUTER.delete('/assignments')
+def remove_assignment(slot_id: int, member_id: int) -> int:
+    return get_data_service().remove_assignment(slot_id, member_id)

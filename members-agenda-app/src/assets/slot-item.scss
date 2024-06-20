@@ -21,7 +21,7 @@
     font-size: 1em;
 }
 .session-track,
-.session-members-needed {
+.session-members-needed, .member {
     font-size: 0.75em;
 }
 
@@ -32,8 +32,31 @@
     &:hover {
         font-style: italic;
     }
-
+    
     &:focus {
         outline: 2px dotted rgba(255,255,255,.8);
+    }
+}
+.action {
+    cursor: pointer;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid white;
+    padding: 0 0.5em;
+    margin: 0.5em 0;
+    display: inline-block;
+    
+    &:hover {
+        background: rgba(255, 255, 255, 0.75);
+    }
+}
+.action.remove {
+    &:hover {
+        border: 1px solid red;
+    }
+}
+.action.add {
+    &:hover {
+        border: 1px solid rgb(58, 143, 58);
     }
 }

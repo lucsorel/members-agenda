@@ -39,6 +39,10 @@ class Person(BaseModel):
     fullname: str
     is_member: bool
 
+class Assignment(BaseModel):
+    slot_id: int
+    member_id: int
+
 class AlreadyInvolvedResponse(BaseModel):
     message: str
     member_slots: Iterable[Slot]

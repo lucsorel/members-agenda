@@ -19,6 +19,9 @@ class PersonService:
         else:
             return person
 
+    def get_members(self) -> list[Person]:
+        return self.data_service.get_members()
+
     def add_member_to_slot(self, member_id: int, slot_id: int, response: Response) -> int:
         person = self.data_service.get_person(member_id)
         if person is None:

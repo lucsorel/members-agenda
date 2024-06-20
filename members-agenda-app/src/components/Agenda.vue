@@ -1,22 +1,28 @@
 <script setup>
 import { ref } from 'vue'
-import { Slot, Venue } from '@/domain/domain'
+import { Assignment, Member, Slot, Venue } from '@/domain/domain'
 import { range, pad2, toGridRow } from '@/domain/grid'
-import jsonSlots from '@/domain/slots.json'
-import jsonVenues from '@/domain/venues.json'
 
 import SlotItem from '@/components/SlotItem.vue'
 import AddMemberModal from '@/components/AddMemberModal.vue'
 
 const loaded = ref(false)
-const timeGridSlots = ref([])
 
-const timeGridVenues = ref(null)
 const timeGridLabels = ref([])
 const timeGridRowsCSS = ref('')
 const timeGridColumnsCSS = ref('')
 
-function initWithSlots(slots) {
+
+async function fetchMembers() {
+    const membersJson = await fetch('/api/people/members').then(membersResponse => membersResponse.json())
+    return membersJson.map(Member.fromApiJson)
+}
+async function fetchAssignments(startDatetime, endDatetime) {
+    const assignmentsJson = await fetch(`/api/assignments/in-period?start=${startDatetime}&end=${endDatetime}`).then(membersResponse => membersResponse.json())
+    return assignmentsJson.map(Assignment.fromApiJson)
+}
+
+function initGridWithSlots(slots) {
     // creates the CSS variables for the time table and the tracks
     const startHour = Math.floor(Math.min(
         ...slots.map(slot => slot.decimalStartHour())
@@ -39,72 +45,94 @@ function initWithSlots(slots) {
         ...range((endHour - startHour) * 2, startHour, 0.5),
         endHour
     ].map(hour => hour % 1 == 0 ? {hour: hour, paddedHour: pad2(hour), paddedMinute: '00'}: {hour: Math.trunc(hour), paddedHour: pad2(Math.trunc(hour)), paddedMinute: '30'})
-
 }
 
-function loadSlots(venues) {
+async function loadSlots(venues, startDatetime, endDatetime, members, assignments) {
     const ranksByVenueName = venues.reduce((agg, venue) => ({...agg, [venue.name]: venue.rank}), {})
-    fetch('/api/slots/in-period?start=2024-06-28T00:00:00&end=2024-06-28T23:59:59').then(
-        slotsResponse => slotsResponse.json().then(
-            jsonSlots => {
-                const slots = jsonSlots.map(jsonSlot => Slot.fromApiJson(jsonSlot, venues, ranksByVenueName))
-                timeGridSlots.value = slots
-                initWithSlots(slots)
-                loaded.value = true
-            })
+    
+    const jsonSlots = await fetch(`/api/slots/in-period?start=${startDatetime}&end=${endDatetime}`).then(
+        slotsResponse => slotsResponse.json()
     )
+    const membersById = members.reduce((agg, member) => ({...agg, [member.id]: member}), {})
+
+    return jsonSlots.map(jsonSlot => Slot.fromApiJson(jsonSlot, venues, ranksByVenueName, membersById, assignments))
 }
-fetch('/api/venues').then(
-    venuesResponse => venuesResponse.json().then(
-        venuesJson => {
-            const venues = venuesJson.map(Venue.fromApiJson)
 
-            const tracksNumber = venues.length
-            const tracksGridColumns = [
-                '[times] 4em',
-                '[track-1-start] 1fr',
-                ...range(tracksNumber - 1, 1).map(trackIndex => `[track-${trackIndex}-end track-${trackIndex + 1}-start] 1fr`),
-                `[track-${tracksNumber}-end] 1fr`
-            ]
-            timeGridColumnsCSS.value = tracksGridColumns.reduce((css, tracksGridColumn) => `${css} ${tracksGridColumn}`)
+async function fetchVenues() {
+    const venuesJson = await fetch('/api/venues').then(venuesResponse => venuesResponse.json())
+    const venues = venuesJson.map(Venue.fromApiJson)
+    
+    const tracksNumber = venues.length
+    const tracksGridColumns = [
+        '[times] 4em',
+        '[track-1-start] 1fr',
+        ...range(tracksNumber - 1, 1).map(trackIndex => `[track-${trackIndex}-end track-${trackIndex + 1}-start] 1fr`),
+        `[track-${tracksNumber}-end] 1fr`
+    ]
+    timeGridColumnsCSS.value = tracksGridColumns.reduce((css, tracksGridColumn) => `${css} ${tracksGridColumn}`)
+    return venues
+}
 
-            timeGridVenues.value = venues
-            // console.log({venues})
-            loadSlots(venues)
-        }
-    )
-)
+const startDatetime = '2024-06-27T00:00:00'
+const endDatetime = '2024-06-27T23:59:59'
 
-const isModalOpened = ref(false);
+const venues = await fetchVenues()
+const timeGridVenues = ref(venues)
+const members = ref(await fetchMembers())
+const assignments = await fetchAssignments(startDatetime, endDatetime)
+const slots = await loadSlots(venues, startDatetime, endDatetime, members.value, assignments)
+const timeGridSlots = ref(slots)
+initGridWithSlots(slots)
+
+loaded.value = true
+
+const isModalOpened = ref(false)
 
 const openModal = () => {
-  isModalOpened.value = true
+    isModalOpened.value = true
 }
 const closeModal = () => {
-  isModalOpened.value = false
+    isModalOpened.value = false
 }
 
-const submitHandler = ()=> {
+const submitHandler = () => {
     console.log("modal submission")
+}
+
+function addMemberToSlot(slot) {
+    console.log(slot)
+}
+
+async function removeMemberFromSlot(slot, memberToRemove) {
+    const membersRemovedNb = await fetch(
+        `/api/assignments?slot_id=${slot.id}&member_id=${memberToRemove.id}`,
+        {method: 'DELETE'}
+    ).then(removeResponse => removeResponse.json())
+    if (membersRemovedNb > 0) {
+        slot.members = slot.members.filter(member => member.id != memberToRemove.id)
+    }
 }
 </script>
 
 <template>
     <h2 id="schedule-heading">BreizhCamp members agenda</h2>
-
+    
     <div class="schedule" v-if="loaded">
         <span v-for="timeGridVenue in timeGridVenues" :key="timeGridVenue.id" class="track-slot" aria-hidden="true" :style="`grid-column: track-${timeGridVenue.rank}; grid-row: tracks;`">{{timeGridVenue.name}}</span>
-
+        
         <h2 v-for="timeGridLabel in timeGridLabels" class="time-slot" :style="`grid-row: time-${timeGridLabel.paddedHour}${timeGridLabel.paddedMinute};`">{{timeGridLabel.hour}}:{{timeGridLabel.paddedMinute}}</h2>
        
-        <SlotItem v-for="timeGridSlot in timeGridSlots" :key="timeGridSlot.id" :slot="timeGridSlot" />
+        <SlotItem v-for="timeGridSlot in timeGridSlots" :key="timeGridSlot.id" :slot="timeGridSlot"
+            @add-member="addMemberToSlot"
+            @remove-member="removeMemberFromSlot"
+        />
     </div>
-
+    
     <div>
         <button @click="openModal">Open modal</button>
     </div>
-
-    <AddMemberModal :isOpen="isModalOpened" @modal-close="closeModal" @submit="submitHandler" name="first-modal">
+    
+    <AddMemberModal :isOpen="isModalOpened" @modal-close="closeModal" @submit="submitHandler" name="first-modal" :members="members">
         <template #header>Manage team members on a slot</template>
         <template #content>Display available team members</template>
     </AddMemberModal>

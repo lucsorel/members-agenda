@@ -4,7 +4,7 @@ from typing import Dict, Iterable, Tuple
 from pymysql.connections import Connection
 from pymysql.cursors import DictCursor
 
-from members_agenda_api.domain import Event, Person, Slot, Venue
+from members_agenda_api.domain import Assignment, Event, Person, Slot, Venue
 
 
 ALL_VENUES_QUERY = 'SELECT `id`, `name`, `rank`, `bg_color_hex` FROM venues;'
@@ -29,6 +29,7 @@ WHERE slots.`id` = %(slot_id)s;
 
 # person-centric queries
 PERSON_BY_ID_QUERY = 'SELECT `id`, `fullname`, `is_member` FROM people WHERE `id` = %(person_id)s;'
+ALL_MEMBERS_QUERY = 'SELECT `id`, `fullname`, `is_member` FROM people WHERE is_member = 1;'
 
 MEMBER_SLOTS_QUERY = '''
 SELECT slots.`id`, slots.`title`, slots.`start`, slots.`end`, slots.`venue_id`, slots.`needed_members_nb`
@@ -47,6 +48,18 @@ FROM people
 WHERE people.`id` = %(person_id)s AND events.`start` < %(end)s AND events.`end` > %(start)s
 ORDER BY events.`start` ASC;
 '''
+# slot-member centric queries
+SLOTS_MEMBERS_IN_PERIOD_QUERY = '''
+SELECT slots.`id` as slot_id, people.`id` as member_id
+FROM people
+    LEFT JOIN slots_members ON people.id = slots_members.person_id
+    JOIN slots ON slots_members.slot_id = slots.id
+WHERE slots.`start` >= %(start)s AND slots.`end` <= %(end)s
+ORDER BY slots.`start` ASC;
+'''
+
+REMOVE_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members.`slot_id` = %(slot_id)s AND slots_members.`person_id` = %(person_id)s;'
+INSERT_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members.`slot_id` = %(slot_id)s AND slots_members.`person_id` = %(person_id)s;'
 
 class DataService:
     def __init__(self, mysql_connection: Connection):
@@ -111,6 +124,16 @@ class DataService:
         else:
             return None
 
+    def get_members(self) -> list[Person]:
+        return [
+            Person(
+                id=person_dict['id'],
+                fullname=person_dict['fullname'],
+                is_member=person_dict['is_member'] == b'\x01',
+            )
+            for person_dict in self._query(ALL_MEMBERS_QUERY)
+        ]
+
     def get_slot_with_members(self, slot_id: int) -> tuple[Slot, tuple[Person]]:
         slot_with_members = self._prepared_query(SLOT_WITH_MEMBERS_QUERY, {"slot_id": slot_id})
 
@@ -144,3 +167,13 @@ class DataService:
     
     def add_member_to_slot(self, person_id: int, slot_id: int) -> int:
         return self._prepared_insert('INSERT INTO `slots_members` (`person_id`, `slot_id`) VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
+
+    def get_assignments(self, period: tuple[datetime, datetime]) -> list[Assignment]:
+        start, end = period
+        return [
+            Assignment(**assignment_dict)
+            for assignment_dict in self._prepared_query(SLOTS_MEMBERS_IN_PERIOD_QUERY, {"start": start, "end": end})
+        ]
+
+    def remove_assignment(self, slot_id: int, member_id: int) -> int:
+        return self._prepared_insert(REMOVE_SLOT_MEMBER_QUERY, {"slot_id": slot_id, "person_id": member_id})

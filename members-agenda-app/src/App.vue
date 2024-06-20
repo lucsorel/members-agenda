@@ -3,7 +3,9 @@ import Agenda from '@/components/Agenda.vue'
 </script>
 
 <template>
-  <Agenda />
+  <Suspense>
+    <Agenda />
+  </Suspense>
 </template>
 
 <style scoped>
