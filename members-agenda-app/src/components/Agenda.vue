@@ -86,21 +86,40 @@ initGridWithSlots(slots)
 
 loaded.value = true
 
-const isModalOpened = ref(false)
+const assignmentsSlot = ref(null)
+const openSlotAssignmentModal = ref(false)
+const assignmentLastError = ref(null)
 
-const openModal = () => {
-    isModalOpened.value = true
+const openModal = (slot) => {
+    assignmentsSlot.value = slot
+    assignmentLastError.value = null
+    openSlotAssignmentModal.value = true
 }
 const closeModal = () => {
-    isModalOpened.value = false
+    assignmentsSlot.value = null
+    assignmentLastError.value = null
+    openSlotAssignmentModal.value = false
 }
 
-const submitHandler = () => {
-    console.log("modal submission")
-}
-
-function addMemberToSlot(slot) {
-    console.log(slot)
+async function addMemberToSlot(slot, memberToAdd) {
+    assignmentLastError.value = null
+    const addMemberResponse = await fetch(
+        `/api/slots/${slot.id}/add-member?member_id=${memberToAdd.id}`,
+        {method: 'POST'}
+    ).then(response => response.json())
+    if (addMemberResponse == 1) {
+        slot.members.push(memberToAdd)
+    } else {
+        let errorMessage = `${memberToAdd.fullname} n'est pas disponible, elle ou il intervient déjà dans`
+        if (addMemberResponse.member_slots.length > 0) {
+            const memberSlot = addMemberResponse.member_slots[0]
+            errorMessage += ` un autre slot (${venues.find(venue => venue.id === memberSlot.venue_id).name} : "${memberSlot.title}").`
+        } else {
+            const speakerEvent = addMemberResponse.speaker_events[0]
+            errorMessage += ` une conférence (${venues.find(venue => venue.id === speakerEvent.venue_id).name} : "${speakerEvent.title}").`
+        }
+        assignmentLastError.value = errorMessage
+    }
 }
 
 async function removeMemberFromSlot(slot, memberToRemove) {
@@ -118,23 +137,51 @@ async function removeMemberFromSlot(slot, memberToRemove) {
     <h2 id="schedule-heading">BreizhCamp members agenda</h2>
     
     <div class="schedule" v-if="loaded">
-        <span v-for="timeGridVenue in timeGridVenues" :key="timeGridVenue.id" class="track-slot" aria-hidden="true" :style="`grid-column: track-${timeGridVenue.rank}; grid-row: tracks;`">{{timeGridVenue.name}}</span>
+        <span v-for="timeGridVenue in timeGridVenues" :key="timeGridVenue.id" class="track-slot" aria-hidden="true" :style="`background-color: #${timeGridVenue.bgColorHex}; grid-column: track-${timeGridVenue.rank}; grid-row: tracks;`">{{timeGridVenue.name}}</span>
         
         <h2 v-for="timeGridLabel in timeGridLabels" class="time-slot" :style="`grid-row: time-${timeGridLabel.paddedHour}${timeGridLabel.paddedMinute};`">{{timeGridLabel.hour}}:{{timeGridLabel.paddedMinute}}</h2>
        
         <SlotItem v-for="timeGridSlot in timeGridSlots" :key="timeGridSlot.id" :slot="timeGridSlot"
-            @add-member="addMemberToSlot"
+            @add-member="openModal"
             @remove-member="removeMemberFromSlot"
         />
     </div>
-    
-    <div>
-        <button @click="openModal">Open modal</button>
-    </div>
-    
-    <AddMemberModal :isOpen="isModalOpened" @modal-close="closeModal" @submit="submitHandler" name="first-modal" :members="members">
-        <template #header>Manage team members on a slot</template>
-        <template #content>Display available team members</template>
+
+    <AddMemberModal class="assign-member" :isOpen="openSlotAssignmentModal" @modal-close="closeModal" name="add-members" :slot="assignmentsSlot" :members="members">
+        <template #header>Affecter / retirer des membres</template>
+        <template #content>
+            <div>
+                <div v-if="assignmentsSlot == null">Pas de slot défini à staffer.</div>
+                <div v-if="assignmentsSlot">
+                    <div>
+                        <strong>
+                            {{ assignmentsSlot.title }}
+                        </strong>
+                        - 
+                        <span>
+                            {{ assignmentsSlot.venue }}
+                        </span>
+                        - 
+                        <span>
+                            {{ assignmentsSlot.startHour }}:{{ assignmentsSlot.startMinute }} - {{ assignmentsSlot.endHour }}:{{ assignmentsSlot.endMinute }}
+                        </span>
+                    </div>
+                    <div>
+                        <span>
+                            Besoins : {{ assignmentsSlot.members.length }} membre·s / {{ assignmentsSlot.membersNeededMin }} requis
+                        </span>
+                    </div>
+                    <div class="members">
+                        <div v-if="assignmentLastError" class="assignment-error">{{ assignmentLastError }}</div>
+                        <div v-for="member in members" :key="member.id" class="member">
+                            <span v-if="! assignmentsSlot.members.includes(member)" class="action add" @click="addMemberToSlot(assignmentsSlot, member)">➕</span>
+                            <span v-if="assignmentsSlot.members.includes(member)" class="action remove" @click="removeMemberFromSlot(assignmentsSlot, member)">❌</span>
+                            <span>&nbsp;{{ member.fullname }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
     </AddMemberModal>
 </template>
 
@@ -149,5 +196,48 @@ async function removeMemberFromSlot(slot, memberToRemove) {
         grid-template-rows: v-bind(timeGridRowsCSS);
         grid-template-columns: v-bind(timeGridColumnsCSS);
     }
+}
+.assign-member{
+    .members {
+        margin-top: 10px;
+        .member {
+            display: inline-block;
+            width: 49%;
+            text-align: left;
+        }
+    }
+}
+.action {
+    cursor: pointer;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid white;
+    padding: 0 0.5em;
+    margin: 0.2em 0;
+    display: inline-block;
+    
+    &:hover {
+        background: rgba(255, 255, 255, 0.75);
+    }
+}
+.action.remove {
+    &:hover {
+        border: 1px solid red;
+    }
+}
+.action.add {
+    &:hover {
+        border: 1px solid rgb(58, 143, 58);
+    }
+}
+.assignment-error {
+    border-radius: 5px;
+    color: red;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid white;
+    padding: 0 0.5em;
+    margin: 0.2em 0;
+    display: inline-block;
+    text-align: left;
 }
 </style>

@@ -11,7 +11,7 @@ const emit = defineEmits(['add-member', 'remove-member'])
     <div class="session"
       :style="`grid-column: track-${slot.rank}; grid-row: ${slot.gridRowStart} / ${slot.gridRowEnd}; background-color: #${slot.bgColorHex}`"
      >
-        <h3 class="session-title">{{ slot.name }}</h3>
+        <h3 class="session-title">{{ slot.title }}</h3>
         <span class="session-time">{{ slot.startHour }}:{{ slot.startMinute }} - {{ slot.endHour }}:{{ slot.endMinute }}</span>
         <span class="session-track">({{ slot.venue }})</span>
         <span class="session-members-needed">{{ slot.members.length }} / {{ slot.membersNeededMin }}</span>

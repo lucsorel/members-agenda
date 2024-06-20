@@ -7,9 +7,9 @@ function hash(...values) {
 }
 
 export class Slot{
-    constructor(id, name, day, startTime, endTime, venue, bgColorHex, rank, membersNeededMin, members=[], sessions=[]) {
+    constructor(id, title, day, startTime, endTime, venue, bgColorHex, rank, membersNeededMin, members=[], sessions=[]) {
         this.id = id
-        this.name = name;
+        this.title = title;
         this.day = day;
         [this.startHour, this.startMinute] = startTime.split(':');
         [this.endHour, this.endMinute] = endTime.split(':');
