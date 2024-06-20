@@ -1,0 +1,14 @@
+
+services:
+  # proxy for the frontend application and the web api
+  nginx:
+    image: nginx:1.27-alpine-slim
+    volumes:
+      - ./nginx/members-agenda.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./dist:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+      - "443:443"
+    extra_hosts:
+      - members-agenda-app:host-gateway
+      - members-agenda-api:host-gateway

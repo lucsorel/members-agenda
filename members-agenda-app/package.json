@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev-nginx": "vite --host 0.0.0.0",
     "build": "vite build",
     "build-watch": "vite build --watch",
     "preview": "vite preview"

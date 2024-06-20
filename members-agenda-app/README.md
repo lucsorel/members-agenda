@@ -11,6 +11,9 @@ This template should help get you started developing with Vue 3 in Vite. The tem
 ```sh
 # starts the frontend dev server on http://localhost:5173
 npm run dev
+
+# starts the frontend dev server to be used with nginx
+npm run dev-nginx
 ```
 
 ## Resources
