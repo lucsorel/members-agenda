@@ -134,7 +134,7 @@ async function removeMemberFromSlot(slot, memberToRemove) {
 </script>
 
 <template>
-    <h2 id="schedule-heading">BreizhCamp members agenda</h2>
+    <h2 id="schedule-heading">BreizhCamp members agenda - jeudi 27 juin 2024</h2>
     
     <div class="schedule" v-if="loaded">
         <span v-for="timeGridVenue in timeGridVenues" :key="timeGridVenue.id" class="track-slot" aria-hidden="true" :style="`background-color: #${timeGridVenue.bgColorHex}; grid-column: track-${timeGridVenue.rank}; grid-row: tracks;`">{{timeGridVenue.name}}</span>
