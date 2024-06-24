@@ -27,7 +27,7 @@ def create_2_test_venues(connection: Connection):
         cursor.execute(ADD_2_VENUES_QUERY)
         connection.commit()
 
-def test_get_2_venues():
+def test_get_2_venues_envvars():
     with MySqlContainer() as container:
         environ["MYSQL_HOST"] = container.get_container_host_ip()
         environ["MYSQL_PORT"] = container.get_exposed_port(3306)
