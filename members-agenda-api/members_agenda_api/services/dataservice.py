@@ -68,19 +68,18 @@ class DataService:
     def _query(self, query: str) -> Iterable[Dict]:
         return self._prepared_query(query, None)
 
-    def _prepared_query(self, prepared_query: str, query_args: Tuple|Iterable|Dict|None) -> Iterable[Dict]:
+    def _prepared_query(self, prepared_query: str, query_args: tuple|Iterable|dict|None) -> Iterable[Dict]:
         """
         Execute a prepared query on database
         Example:
         >>> prepared_query = "SELECT * FROM slots WHERE `start` > %(start)s;"
         >>> query_args = {'start': '2024-06-25T09:30:00'}
         """
-        
         with self.mysql_connection.cursor(cursor=DictCursor) as cursor:
             cursor.execute(prepared_query, query_args)
             return cursor.fetchall()
 
-    def _prepared_insert(self, prepared_query: str, query_args: Tuple|Iterable|Dict|None) -> int:
+    def _prepared_insert(self, prepared_query: str, query_args: tuple|Iterable|dict|None) -> int:
         with self.mysql_connection.cursor() as cursor:
             affected_rows_nb = cursor.execute(prepared_query, query_args)
             self.mysql_connection.commit()

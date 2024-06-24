@@ -16,6 +16,9 @@ testcontainers = {extras = ["mysql"], version = "^4.5.1"}
 pydoctrace = "^0.3.0"
 pytest = "^8.2.2"
 
+[tool.pytest.ini_options]
+console_output_style = "count"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
