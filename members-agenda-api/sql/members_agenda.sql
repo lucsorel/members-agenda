@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mysql:3306
--- Généré le : mar. 18 juin 2024 à 20:34
+-- Généré le : lun. 24 juin 2024 à 15:35
 -- Version du serveur : 8.0.37
 -- Version de PHP : 8.0.27
 
@@ -557,8 +557,10 @@ CREATE TABLE `slots_members` (
 --
 
 INSERT INTO `slots_members` (`slot_id`, `person_id`) VALUES
-(44, 24),
-(44, 99);
+(44, 7),
+(44, 21),
+(44, 38),
+(44, 73);
 
 -- --------------------------------------------------------
 
