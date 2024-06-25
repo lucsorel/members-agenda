@@ -12,14 +12,12 @@ CREATE TABLE `venues` (
 -- Adds sample records
 INSERT INTO `venues` (`id`, `name`, `rank`, `bg_color_hex`) VALUES
     (1, 'Accueil BreizhCamp', 1, '005F73'),
-    (2, 'Goodies', 2, '2D8289'),
-    (3, 'Hall et stands', 3, '59A49F'),
-    (4, 'Amphi A', 4, '8E3089');
+    (2, 'Goodies', 2, '2D8289');
 
 -- Add index
 ALTER TABLE `venues` ADD PRIMARY KEY (`id`);
 
 -- AUTO_INCREMENT
 ALTER TABLE `venues`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
