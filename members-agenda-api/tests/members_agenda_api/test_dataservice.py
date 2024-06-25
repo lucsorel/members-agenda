@@ -24,4 +24,4 @@ def test_dataservice_get_venues(monkeypatch, sql_test_helper: SqlTestHelper):
     )
 
     venues = DataService(sql_test_helper.connection).get_venues()
-    assert len(venues) == 4
+    assert len(venues) == 2

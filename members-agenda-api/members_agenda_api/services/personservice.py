@@ -15,7 +15,7 @@ class PersonService:
 
         person = self.data_service.get_person(person_id)
         if person is None:
-            raise HTTPException(status_code=404, detail=f'Nobody with id {person_id}')
+            raise HTTPException(status_code=404, detail=f'nobody with id {person_id}')
         else:
             return person
 
@@ -25,13 +25,13 @@ class PersonService:
     def add_member_to_slot(self, member_id: int, slot_id: int, response: Response) -> int:
         person = self.data_service.get_person(member_id)
         if person is None:
-            raise HTTPException(status_code=404, detail=f'Nobody with id {member_id}')
+            raise HTTPException(status_code=404, detail=f'nobody with id {member_id}')
         if not person.is_member:
-            raise HTTPException(status_code=405, detail=f'Person of id {member_id} is not a member')
+            raise HTTPException(status_code=405, detail=f'person of id {member_id} is not a member')
 
         slot, existing_members = self.data_service.get_slot_with_members(slot_id)
         if slot is None:
-            raise HTTPException(status_code=404, detail=f'No slot with id {slot_id}')
+            raise HTTPException(status_code=404, detail=f'no slot with id {slot_id}')
 
         # exits here if the member is already added to the slot
         already_member = any(slot_member.id == member_id for slot_member in existing_members)

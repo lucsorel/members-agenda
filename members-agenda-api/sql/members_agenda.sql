@@ -40,6 +40,9 @@ CREATE TABLE `events` (
 --
 
 INSERT INTO `events` (`id`, `title`, `start`, `end`, `venue_id`) VALUES
+(22, 'Testcontainers : tu ne douteras plus de tes fonctionnalités, jeune Pydawan·e', '2024-06-27 10:30:00', '2024-06-27 11:25:00', 4),
+(45, 'Manifeste pour un artisanat logiciel responsable', '2024-06-27 10:30:00', '2024-06-27 11:25:00', 7),
+
 (1, '▣ QR Codes : suivez les points sans vous perdre ! ▣', '2024-06-26 10:00:00', '2024-06-26 12:00:00', 4),
 (2, 'Parcours initiatique sur l\'authentification avec Keycloak', '2024-06-26 13:30:00', '2024-06-26 15:30:00', 4),
 (3, 'Migration de projets Terraform vers Terragrunt.', '2024-06-26 16:00:00', '2024-06-26 18:00:00', 4),
