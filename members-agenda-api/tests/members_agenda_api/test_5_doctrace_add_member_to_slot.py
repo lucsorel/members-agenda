@@ -43,7 +43,7 @@ def test_add_member_to_slot_doctrace(
     )
 
     # 1. filtre pour ne pas tracer les dépendances
-    NO_LIBRARIES_PRESET = Preset(
+    EXCLUDE_LIBRARIES_PRESET = Preset(
         exclude_call=lambda module_parts, *args: len(module_parts) > 1 and module_parts[0] in {'pymysql', 'pydantic', 'starlette'}
     )
 
@@ -51,7 +51,7 @@ def test_add_member_to_slot_doctrace(
     plantuml_filename = f'tests/doc/PersonService/add_member_to_slot.{slot_id}.{member_id}.{expected_status_code}-component.puml'
     traceable_add_member_to_slot = trace_to_component_puml(
         export_file_path_tpl=plantuml_filename,
-        filter_presets=(EXCLUDE_STDLIB_PRESET, NO_LIBRARIES_PRESET)
+        filter_presets=(EXCLUDE_STDLIB_PRESET, EXCLUDE_LIBRARIES_PRESET)
     )(PersonService.add_member_to_slot)
 
     # 3. monkeypatching
