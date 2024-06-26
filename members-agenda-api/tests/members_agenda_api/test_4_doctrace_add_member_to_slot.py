@@ -1,7 +1,10 @@
 from fastapi.testclient import TestClient
+from pydoctrace.doctrace import trace_to_component_puml
+from pydoctrace.callfilter.presets import EXCLUDE_STDLIB_PRESET, Preset
 from pytest import mark
 
 from members_agenda_api.__main__ import app
+from members_agenda_api.services.personservice import PersonService
 
 from tests.containers.sql_helper import SqlTestHelper
 from tests.containers.sql_files import SQL_FILES_FOLDER
@@ -39,10 +42,26 @@ def test_add_member_to_slot_doctrace(
         lambda: sql_test_helper.connection
     )
 
+    # 1. filtre pour ne pas tracer les dépendances
+    NO_LIBRARIES_PRESET = Preset(
+        exclude_call=lambda module_parts, *args: len(module_parts) > 1 and module_parts[0] in {'pymysql', 'pydantic', 'starlette'}
+    )
+
+    # 2. décoration de la méthode PersonService.add_member_to_slot
+    plantuml_filename = f'tests/doc/PersonService/add_member_to_slot.{slot_id}.{member_id}.{expected_status_code}-component.puml'
+    traceable_add_member_to_slot = trace_to_component_puml(
+        export_file_path_tpl=plantuml_filename,
+        filter_presets=(EXCLUDE_STDLIB_PRESET, NO_LIBRARIES_PRESET)
+    )(PersonService.add_member_to_slot)
+
+    # 3. monkeypatching
+    monkeypatch.setattr(
+        'members_agenda_api.services.personservice.PersonService.add_member_to_slot',
+        traceable_add_member_to_slot
+    )
+
     client = TestClient(app)
     response = client.post(f'/api/slots/{slot_id}/add-member?member_id={member_id}')
-    # print(f'{response.status_code=}')
-    # print(f'{response.json()=}')
     
     assert response.status_code == expected_status_code
     assert response.json() == expected_json
