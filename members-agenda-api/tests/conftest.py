@@ -1,8 +1,10 @@
 """
 This module is detected by pytest and registers the fixtures defined in it.
 """
+from subprocess import run
+
 from pymysql.connections import Connection
-from pytest import fixture
+from pytest import fixture, mark
 from testcontainers.mysql import MySqlContainer
 
 from tests.containers.sql_helper import SqlTestHelper
@@ -28,3 +30,34 @@ def sql_test_helper() -> SqlTestHelper:
         yield SqlTestHelper(connection)
 
         # you could write post-tests code here
+
+def _is_docker_available() -> bool:
+    """
+    Checks whether docker is installed and running using subprocesses.
+
+    Do not use directly, use the IS_DOCKER_AVAILABLE constant instead.
+    """
+    is_docker_installed_process = run(("which", "docker"), capture_output=True)
+    if is_docker_installed_process.returncode != 0:
+        return False
+
+    is_docker_running_process = run(("docker", "ps"), capture_output=True)
+    return is_docker_running_process.returncode == 0
+
+
+def _is_docker_available() -> bool:
+    """
+    Checks whether docker is installed and running using subprocesses.
+    """
+    is_docker_installed_process = run(("which", "docker"), capture_output=True)
+    if is_docker_installed_process.returncode != 0:
+        return False
+
+    is_docker_running_process = run(("docker", "ps"), capture_output=True)
+    return is_docker_running_process.returncode == 0
+
+# déclaration programmatique du marker
+mark.skipifnodocker = mark.skipif(
+    not _is_docker_available(),
+    reason="Requires docker to spin a container"
+)

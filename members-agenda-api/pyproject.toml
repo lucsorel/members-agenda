@@ -18,6 +18,10 @@ pytest = "^8.2.2"
 
 [tool.pytest.ini_options]
 console_output_style = "count"
+addopts = "--strict-markers"
+markers = [
+    "containers: integration tests requiring docker test containers",
+]
 
 [build-system]
 requires = ["poetry-core"]

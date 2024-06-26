@@ -1,12 +1,14 @@
-from members_agenda_api.services.dataservice import DataService
-
 from pydoctrace.doctrace import trace_to_component_puml
 from pydoctrace.callfilter.presets import EXCLUDE_STDLIB_PRESET, Preset
+from pytest import mark
+
+from members_agenda_api.services.dataservice import DataService
 
 from tests.containers.sql_helper import SqlTestHelper
 from tests.containers.sql_files import SQL_FILES_FOLDER
 
-
+@mark.containers
+@mark.skipifnodocker
 def test_dataservice_get_venues(monkeypatch, sql_test_helper: SqlTestHelper):
     sql_test_helper.setup_with_sql_filepath(SQL_FILES_FOLDER / 'venues_samples.sql')
 
