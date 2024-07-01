@@ -1,0 +1,15 @@
+[
+    {"name": "FAC - Accueil CYIM", "day": "Tuesday", "startTime": "9:00", "endTime": "9:30", "venue": "Accueil BreizhCamp", "membersNeededMin": 2},
+    {"name": "Rendez-vous général", "day": "Tuesday", "startTime": "9:30", "endTime": "10:00", "venue": "Accueil BreizhCamp", "membersNeededMin": 10},
+    {"name": "Départ vers FranceCar", "day": "Tuesday", "startTime": "9:40", "endTime": "10:00", "venue": "Prestataires", "membersNeededMin": 2},
+    {"name": "Accueil Eurolive", "day": "Tuesday", "startTime": "10:30", "endTime": "11:00", "venue": "Accueil BreizhCamp", "membersNeededMin": 1},
+    {"name": "Charger camion", "day": "Tuesday", "startTime": "10:15", "endTime": "11:00", "venue": "Prestataires", "membersNeededMin": 10},
+    {"name": "Décharger camion", "day": "Tuesday", "startTime": "11:00", "endTime": "12:00", "venue": "Accueil BreizhCamp", "membersNeededMin": 10},
+    {"name": "Mise en place accueil", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Accueil BreizhCamp", "membersNeededMin": 3},
+    {"name": "Mise en place amphi", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Amphi A", "membersNeededMin": 2},
+    {"name": "Mise en place amphi", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Amphi B", "membersNeededMin": 3},
+    {"name": "Mise en place amphi", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Amphi C", "membersNeededMin": 5},
+    {"name": "Mise en place amphi", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Amphi D", "membersNeededMin": 3},
+    {"name": "Mise en place amphi", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Amphi E", "membersNeededMin": 3},
+    {"name": "Mise en place stands", "day": "Tuesday", "startTime": "14:00", "endTime": "18:00", "venue": "Hall et stands", "membersNeededMin": 2}
+]

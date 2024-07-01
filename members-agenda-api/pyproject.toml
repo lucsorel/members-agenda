@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "members-agenda-api"
+version = "0.1.0"
+description = ""
+authors = ["Luc Sorel-Giffo"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.111.0"
+pymysql = "^1.1.1"
+cryptography = "^42.0.8"
+
+[tool.poetry.group.dev.dependencies]
+testcontainers = {extras = ["mysql"], version = "^4.5.1"}
+pydoctrace = "^0.3.0"
+pytest = "^8.2.2"
+
+[tool.pytest.ini_options]
+console_output_style = "count"
+addopts = "--strict-markers"
+markers = [
+    "containers: integration tests requiring docker test containers",
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
