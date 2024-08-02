@@ -6,6 +6,13 @@ import { range, pad2, toGridRow } from '@/domain/grid'
 import SlotItem from '@/components/SlotItem.vue'
 import AddMemberModal from '@/components/AddMemberModal.vue'
 
+
+const { day } = defineProps({
+    day: String
+})
+const startDatetime = `${day}T00:00:00`
+const endDatetime = `${day}T23:59:59`
+
 const loaded = ref(false)
 
 const timeGridLabels = ref([])
@@ -73,8 +80,6 @@ async function fetchVenues() {
     return venues
 }
 
-const startDatetime = '2024-06-27T00:00:00'
-const endDatetime = '2024-06-27T23:59:59'
 
 const venues = await fetchVenues()
 const timeGridVenues = ref(venues)
