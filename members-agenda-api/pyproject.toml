@@ -10,6 +10,7 @@ python = "^3.12"
 fastapi = "^0.111.0"
 pymysql = "^1.1.1"
 cryptography = "^42.0.8"
+psycopg = {extras = ["binary"], version = "^3.2.3"}
 
 [tool.poetry.group.dev.dependencies]
 testcontainers = {extras = ["mysql"], version = "^4.5.1"}

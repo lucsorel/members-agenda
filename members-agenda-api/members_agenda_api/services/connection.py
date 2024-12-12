@@ -1,18 +1,18 @@
 from os import getenv
 
-from pymysql.connections import Connection
+from psycopg.connection import Connection
+from psycopg.rows import dict_row
 
 def get_connection() -> Connection:
-    MYSQL_HOST = getenv('MYSQL_HOST')
-    MYSQL_PORT = int(getenv('MYSQL_PORT'))
+    POSTGRES_HOST = getenv('POSTGRES_HOST', 'localhost')
+    POSTGRES_PORT = int(getenv('POSTGRES_PORT', '5432'))
     MEMBERS_AGENDA_DATABASE = getenv('MEMBERS_AGENDA_DATABASE')
     MEMBERS_AGENDA_USER = getenv('MEMBERS_AGENDA_USER')
     MEMBERS_AGENDA_PASSWORD = getenv('MEMBERS_AGENDA_PASSWORD')
+    connection_url = f'postgresql://{MEMBERS_AGENDA_USER}:{MEMBERS_AGENDA_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{MEMBERS_AGENDA_DATABASE}'
     
-    return Connection(
-        host=MYSQL_HOST,
-        port=MYSQL_PORT,
-        user=MEMBERS_AGENDA_USER,
-        password=MEMBERS_AGENDA_PASSWORD,
-        database=MEMBERS_AGENDA_DATABASE,
+    return Connection.connect(
+        conninfo=connection_url,
+        autocommit=True,
+        row_factory=dict_row,
     )

@@ -1,69 +1,68 @@
 from datetime import datetime
-from typing import Dict, Iterable, Tuple
+from typing import Dict, Iterable
 
-from pymysql.connections import Connection
-from pymysql.cursors import DictCursor
+from psycopg.connection import Connection
 
 from members_agenda_api.domain import Assignment, Event, Person, Slot, Venue
 
 
-ALL_VENUES_QUERY = 'SELECT `id`, `name`, `rank`, `bg_color_hex` FROM venues;'
+ALL_VENUES_QUERY = 'SELECT "id", "name", "rank", "bg_color_hex" FROM venues;'
 
 # event-centric queries
-_EVENTS_FIELDS = '`id`, `title`, `start`, `end`, `venue_id`'
+_EVENTS_FIELDS = '"id", "title", "start", "end", "venue_id"'
 
 # slot-centric queries
-_SLOTS_FIELDS = '`id`, `title`, `start`, `end`, `venue_id`, `needed_members_nb`'
-ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots`;'
-SLOTS_IN_PERIOD_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots` WHERE `start` >= %(start)s AND `end` <= %(end)s;'
-INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM `slots` WHERE `start` < %(end)s AND `end` > %(start)s;'
+_SLOTS_FIELDS = '"id", "title", "start", "end", "venue_id", "needed_members_nb"'
+ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots";'
+SLOTS_IN_PERIOD_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots" WHERE "start" >= %(start)s AND "end" <= %(end)s;'
+INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots" WHERE "start" < %(end)s AND "end" > %(start)s;'
 
 SLOT_WITH_MEMBERS_QUERY = '''
-SELECT slots.`id`, slots.`title`, slots.`start`, slots.`end`, slots.`venue_id`, slots.`needed_members_nb`,
-  `people`.`id` as people_id, `people`.`fullname` as people_fullname, `people`.`is_member` as people_is_member
+SELECT slots."id", slots."title", slots."start", slots."end", slots."venue_id", slots."needed_members_nb",
+  "people"."id" as people_id, "people"."fullname" as people_fullname, "people"."is_member" as people_is_member
 FROM slots
-    LEFT JOIN `slots_members` ON slots.id = slots_members.slot_id
-    LEFT JOIN `people` ON slots_members.person_id = people.id
-WHERE slots.`id` = %(slot_id)s;
+    LEFT JOIN "slots_members" ON slots.id = slots_members.slot_id
+    LEFT JOIN "people" ON slots_members.person_id = people.id
+WHERE slots."id" = %(slot_id)s;
 '''
 
 # person-centric queries
-PERSON_BY_ID_QUERY = 'SELECT `id`, `fullname`, `is_member` FROM people WHERE `id` = %(person_id)s;'
-ALL_MEMBERS_QUERY = 'SELECT `id`, `fullname`, `is_member` FROM people WHERE is_member = 1;'
+PERSON_BY_ID_QUERY = 'SELECT "id", "fullname", "is_member" FROM people WHERE "id" = %(person_id)s;'
+ALL_MEMBERS_QUERY = 'SELECT "id", "fullname", "is_member" FROM people WHERE is_member = 1::bit;'
 
 MEMBER_SLOTS_QUERY = '''
-SELECT slots.`id`, slots.`title`, slots.`start`, slots.`end`, slots.`venue_id`, slots.`needed_members_nb`
+SELECT slots."id", slots."title", slots."start", slots."end", slots."venue_id", slots."needed_members_nb"
 FROM people
     LEFT JOIN slots_members ON people.id = slots_members.person_id
     JOIN slots ON slots_members.slot_id = slots.id
-WHERE people.`id` = %(person_id)s AND slots.`start` < %(end)s AND slots.`end` > %(start)s
-ORDER BY slots.`start` ASC;
+WHERE people."id" = %(person_id)s AND slots."start" < %(end)s AND slots."end" > %(start)s
+ORDER BY slots."start" ASC;
 '''
 
 SPEAKER_EVENTS_QUERY = '''
-SELECT events.`id`, events.`title`, events.`start`, events.`end`, events.`venue_id`
+SELECT events."id", events."title", events."start", events."end", events."venue_id"
 FROM people
   LEFT JOIN events_speakers ON people.id = events_speakers.person_id
   JOIN events ON events_speakers.event_id = events.id
-WHERE people.`id` = %(person_id)s AND events.`start` < %(end)s AND events.`end` > %(start)s
-ORDER BY events.`start` ASC;
+WHERE people."id" = %(person_id)s AND events."start" < %(end)s AND events."end" > %(start)s
+ORDER BY events."start" ASC;
 '''
 # slot-member centric queries
 SLOTS_MEMBERS_IN_PERIOD_QUERY = '''
-SELECT slots.`id` as slot_id, people.`id` as member_id
+SELECT slots."id" as slot_id, people."id" as member_id
 FROM people
     LEFT JOIN slots_members ON people.id = slots_members.person_id
     JOIN slots ON slots_members.slot_id = slots.id
-WHERE slots.`start` >= %(start)s AND slots.`end` <= %(end)s
-ORDER BY slots.`start` ASC;
+WHERE slots."start" >= %(start)s AND slots."end" <= %(end)s
+ORDER BY slots."start" ASC;
 '''
 
-REMOVE_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members.`slot_id` = %(slot_id)s AND slots_members.`person_id` = %(person_id)s;'
-INSERT_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members.`slot_id` = %(slot_id)s AND slots_members.`person_id` = %(person_id)s;'
+REMOVE_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members."slot_id" = %(slot_id)s AND slots_members."person_id" = %(person_id)s;'
+INSERT_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members."slot_id" = %(slot_id)s AND slots_members."person_id" = %(person_id)s;'
 
 class DataService:
-    def __init__(self, mysql_connection: Connection):
-        self.mysql_connection = mysql_connection
+    def __init__(self, db_connection: Connection):
+        self.db_connection = db_connection
 
     def _query(self, query: str) -> Iterable[Dict]:
         return self._prepared_query(query, None)
@@ -75,14 +74,14 @@ class DataService:
         >>> prepared_query = "SELECT * FROM slots WHERE `start` > %(start)s;"
         >>> query_args = {'start': '2024-06-25T09:30:00'}
         """
-        with self.mysql_connection.cursor(cursor=DictCursor) as cursor:
+        with self.db_connection.cursor() as cursor:
             cursor.execute(prepared_query, query_args)
             return cursor.fetchall()
 
     def _prepared_insert(self, prepared_query: str, query_args: tuple|Iterable|dict|None) -> int:
-        with self.mysql_connection.cursor() as cursor:
-            affected_rows_nb = cursor.execute(prepared_query, query_args)
-            self.mysql_connection.commit()
+        with self.db_connection.cursor() as cursor:
+            affected_rows_nb = cursor.execute(prepared_query, query_args).rowcount
+            self.db_connection.commit()
         return affected_rows_nb
 
 
@@ -115,10 +114,11 @@ class DataService:
         person_dicts = self._prepared_query(PERSON_BY_ID_QUERY, {"person_id": person_id})
         if person_dicts:
             person_dict = person_dicts[0]
+
             return Person(
                 id=person_dict['id'],
                 fullname=person_dict['fullname'],
-                is_member=person_dict['is_member'] == b'\x01',
+                is_member=person_dict['is_member'] == '1',
             )
         else:
             return None
@@ -165,7 +165,7 @@ class DataService:
         )
     
     def add_member_to_slot(self, person_id: int, slot_id: int) -> int:
-        return self._prepared_insert('INSERT INTO `slots_members` (`person_id`, `slot_id`) VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
+        return self._prepared_insert('INSERT INTO "slots_members" ("person_id", "slot_id") VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
 
     def get_assignments(self, period: tuple[datetime, datetime]) -> list[Assignment]:
         start, end = period
