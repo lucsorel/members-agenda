@@ -6,59 +6,58 @@ from psycopg.connection import Connection
 from members_agenda_api.domain import Assignment, Event, Person, Slot, Venue
 
 
-ALL_VENUES_QUERY = 'SELECT "id", "name", "rank", "bg_color_hex" FROM venues;'
+ALL_VENUES_QUERY = 'SELECT "id", "name", "rank", "bg_color_hex" FROM venue;'
 
 # event-centric queries
 _EVENTS_FIELDS = '"id", "title", "start", "end", "venue_id"'
 
 # slot-centric queries
 _SLOTS_FIELDS = '"id", "title", "start", "end", "venue_id", "needed_members_nb"'
-ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots";'
-SLOTS_IN_PERIOD_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots" WHERE "start" >= %(start)s AND "end" <= %(end)s;'
-INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slots" WHERE "start" < %(end)s AND "end" > %(start)s;'
+ALL_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slot";'
+SLOTS_IN_PERIOD_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slot" WHERE "start" >= %(start)s AND "end" <= %(end)s;'
+INTERSECTING_SLOTS_QUERY = f'SELECT {_SLOTS_FIELDS} FROM "slot" WHERE "start" < %(end)s AND "end" > %(start)s;'
 
 SLOT_WITH_MEMBERS_QUERY = '''
-SELECT slots."id", slots."title", slots."start", slots."end", slots."venue_id", slots."needed_members_nb",
-  "people"."id" as people_id, "people"."fullname" as people_fullname, "people"."is_member" as people_is_member
-FROM slots
-    LEFT JOIN "slots_members" ON slots.id = slots_members.slot_id
-    LEFT JOIN "people" ON slots_members.person_id = people.id
-WHERE slots."id" = %(slot_id)s;
+SELECT slot."id", slot."title", slot."start", slot."end", slot."venue_id", slot."needed_members_nb",
+  "person"."id" as people_id, "person"."fullname" as people_fullname, "person"."is_member" as people_is_member
+FROM slot
+    LEFT JOIN "slot__member" ON slot.id = slot__member.slot_id
+    LEFT JOIN "person" ON slot__member.person_id = person.id
+WHERE slot."id" = %(slot_id)s;
 '''
 
 # person-centric queries
-PERSON_BY_ID_QUERY = 'SELECT "id", "fullname", "is_member" FROM people WHERE "id" = %(person_id)s;'
-ALL_MEMBERS_QUERY = 'SELECT "id", "fullname", "is_member" FROM people WHERE is_member = 1::bit;'
+PERSON_BY_ID_QUERY = 'SELECT "id", "fullname", "is_member" FROM person WHERE "id" = %(person_id)s;'
+ALL_MEMBERS_QUERY = 'SELECT "id", "fullname", "is_member" FROM person WHERE is_member = 1::bit;'
 
 MEMBER_SLOTS_QUERY = '''
-SELECT slots."id", slots."title", slots."start", slots."end", slots."venue_id", slots."needed_members_nb"
-FROM people
-    LEFT JOIN slots_members ON people.id = slots_members.person_id
-    JOIN slots ON slots_members.slot_id = slots.id
-WHERE people."id" = %(person_id)s AND slots."start" < %(end)s AND slots."end" > %(start)s
-ORDER BY slots."start" ASC;
+SELECT slot."id", slot."title", slot."start", slot."end", slot."venue_id", slot."needed_members_nb"
+FROM person
+    LEFT JOIN slot__member ON person.id = slot__member.person_id
+    JOIN slot ON slot__member.slot_id = slot.id
+WHERE person."id" = %(person_id)s AND slot."start" < %(end)s AND slot."end" > %(start)s
+ORDER BY slot."start" ASC;
 '''
 
 SPEAKER_EVENTS_QUERY = '''
-SELECT events."id", events."title", events."start", events."end", events."venue_id"
-FROM people
-  LEFT JOIN events_speakers ON people.id = events_speakers.person_id
-  JOIN events ON events_speakers.event_id = events.id
-WHERE people."id" = %(person_id)s AND events."start" < %(end)s AND events."end" > %(start)s
-ORDER BY events."start" ASC;
+SELECT event."id", event."title", event."start", event."end", event."venue_id"
+FROM person
+  LEFT JOIN events_speakers ON person.id = events_speakers.person_id
+  JOIN event ON events_speakers.event_id = event.id
+WHERE person."id" = %(person_id)s AND event."start" < %(end)s AND event."end" > %(start)s
+ORDER BY event."start" ASC;
 '''
 # slot-member centric queries
 SLOTS_MEMBERS_IN_PERIOD_QUERY = '''
-SELECT slots."id" as slot_id, people."id" as member_id
-FROM people
-    LEFT JOIN slots_members ON people.id = slots_members.person_id
-    JOIN slots ON slots_members.slot_id = slots.id
-WHERE slots."start" >= %(start)s AND slots."end" <= %(end)s
-ORDER BY slots."start" ASC;
+SELECT slot."id" as slot_id, person."id" as member_id
+FROM person
+    LEFT JOIN slot__member ON person.id = slot__member.person_id
+    JOIN slot ON slot__member.slot_id = slot.id
+WHERE slot."start" >= %(start)s AND slot."end" <= %(end)s
+ORDER BY slot."start" ASC;
 '''
 
-REMOVE_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members."slot_id" = %(slot_id)s AND slots_members."person_id" = %(person_id)s;'
-INSERT_SLOT_MEMBER_QUERY = 'DELETE FROM slots_members WHERE slots_members."slot_id" = %(slot_id)s AND slots_members."person_id" = %(person_id)s;'
+REMOVE_SLOT_MEMBER_QUERY = 'DELETE FROM slot__member WHERE slot__member."slot_id" = %(slot_id)s AND slot__member."person_id" = %(person_id)s;'
 
 class DataService:
     def __init__(self, db_connection: Connection):
@@ -71,7 +70,7 @@ class DataService:
         """
         Execute a prepared query on database
         Example:
-        >>> prepared_query = "SELECT * FROM slots WHERE `start` > %(start)s;"
+        >>> prepared_query = "SELECT * FROM slot WHERE `start` > %(start)s;"
         >>> query_args = {'start': '2024-06-25T09:30:00'}
         """
         with self.db_connection.cursor() as cursor:
@@ -165,7 +164,7 @@ class DataService:
         )
     
     def add_member_to_slot(self, person_id: int, slot_id: int) -> int:
-        return self._prepared_insert('INSERT INTO "slots_members" ("person_id", "slot_id") VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
+        return self._prepared_insert('INSERT INTO "slot__member" ("person_id", "slot_id") VALUES (%(person_id)s, %(slot_id)s);', {'person_id': person_id, 'slot_id': slot_id})
 
     def get_assignments(self, period: tuple[datetime, datetime]) -> list[Assignment]:
         start, end = period

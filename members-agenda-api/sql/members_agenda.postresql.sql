@@ -1,23 +1,23 @@
 -- Adminer 4.8.1 PostgreSQL 16.4 (Debian 16.4-1.pgdg120+1) dump
 
-DROP TABLE IF EXISTS "events";
-DROP SEQUENCE IF EXISTS events_id_seq;
-CREATE SEQUENCE events_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+DROP TABLE IF EXISTS "event";
+DROP SEQUENCE IF EXISTS event_id_seq;
+CREATE SEQUENCE event_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
-CREATE TABLE "public"."events" (
-    "id" integer DEFAULT nextval('events_id_seq') NOT NULL,
+CREATE TABLE "public"."event" (
+    "id" integer DEFAULT nextval('event_id_seq') NOT NULL,
     "title" text NOT NULL,
     "start" timestamp NOT NULL,
     "end" timestamp NOT NULL,
     "venue_id" integer NOT NULL,
-    CONSTRAINT "events_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "event_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-COMMENT ON COLUMN "public"."events"."id" IS 'system identifier';
+COMMENT ON COLUMN "public"."event"."id" IS 'system identifier';
 
-COMMENT ON COLUMN "public"."events"."title" IS 'title of the event';
+COMMENT ON COLUMN "public"."event"."title" IS 'title of the event';
 
-INSERT INTO "events" ("id", "title", "start", "end", "venue_id") VALUES
+INSERT INTO "event" ("id", "title", "start", "end", "venue_id") VALUES
 (1,	'▣ QR Codes : suivez les points sans vous perdre ! ▣',	'2024-06-26 10:00:00',	'2024-06-26 12:00:00',	4),
 (2,	'Parcours initiatique sur l''authentification avec Keycloak',	'2024-06-26 13:30:00',	'2024-06-26 15:30:00',	4),
 (3,	'Migration de projets Terraform vers Terragrunt.',	'2024-06-26 16:00:00',	'2024-06-26 18:00:00',	4),
@@ -117,14 +117,14 @@ INSERT INTO "events" ("id", "title", "start", "end", "venue_id") VALUES
 (97,	'Orchestrez vos workflows métier avec Temporal.io',	'2024-06-28 16:00:00',	'2024-06-28 16:55:00',	8),
 (98,	'Quel Vector d’attaque pour votre pipeline d’ingestion de logs ?',	'2024-06-28 09:35:00',	'2024-06-28 10:00:00',	8);
 
-DROP TABLE IF EXISTS "events_speakers";
-CREATE TABLE "public"."events_speakers" (
+DROP TABLE IF EXISTS "event__speaker";
+CREATE TABLE "public"."event__speaker" (
     "event_id" integer NOT NULL,
     "person_id" integer NOT NULL,
-    CONSTRAINT "u_events_speakers" UNIQUE ("event_id", "person_id")
+    CONSTRAINT "u_event__speaker" UNIQUE ("event_id", "person_id")
 ) WITH (oids = false);
 
-INSERT INTO "events_speakers" ("event_id", "person_id") VALUES
+INSERT INTO "event__speaker" ("event_id", "person_id") VALUES
 (76,	1),
 (2,	2),
 (40,	2),
@@ -248,18 +248,18 @@ INSERT INTO "events_speakers" ("event_id", "person_id") VALUES
 (59,	123),
 (62,	124);
 
-DROP TABLE IF EXISTS "people";
-DROP SEQUENCE IF EXISTS people_id_seq;
-CREATE SEQUENCE people_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+DROP TABLE IF EXISTS "person";
+DROP SEQUENCE IF EXISTS person_id_seq;
+CREATE SEQUENCE person_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
-CREATE TABLE "public"."people" (
-    "id" integer DEFAULT nextval('people_id_seq') NOT NULL,
+CREATE TABLE "public"."person" (
+    "id" integer DEFAULT nextval('person_id_seq') NOT NULL,
     "fullname" text NOT NULL,
     "is_member" bit(1) NOT NULL,
-    CONSTRAINT "people_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "person_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-INSERT INTO "people" ("id", "fullname", "is_member") VALUES
+INSERT INTO "person" ("id", "fullname", "is_member") VALUES
 (1,	'Adam Souquieres',	'0'),
 (2,	'Adrien Wattez',	'0'),
 (3,	'Alan Duchene',	'0'),
@@ -385,29 +385,29 @@ INSERT INTO "people" ("id", "fullname", "is_member") VALUES
 (123,	'Youen Garel',	'0'),
 (124,	'Guillaume Lours',	'0');
 
-DROP TABLE IF EXISTS "slots";
-DROP SEQUENCE IF EXISTS slots_id_seq;
-CREATE SEQUENCE slots_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+DROP TABLE IF EXISTS "slot";
+DROP SEQUENCE IF EXISTS slot_id_seq;
+CREATE SEQUENCE slot_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
-CREATE TABLE "public"."slots" (
-    "id" integer DEFAULT nextval('slots_id_seq') NOT NULL,
+CREATE TABLE "public"."slot" (
+    "id" integer DEFAULT nextval('slot_id_seq') NOT NULL,
     "title" text NOT NULL,
     "start" timestamp NOT NULL,
     "end" timestamp NOT NULL,
     "venue_id" integer NOT NULL,
     "needed_members_nb" smallint DEFAULT '0' NOT NULL,
-    CONSTRAINT "slots_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "slot_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-COMMENT ON COLUMN "public"."slots"."id" IS 'system identifier';
+COMMENT ON COLUMN "public"."slot"."id" IS 'system identifier';
 
-COMMENT ON COLUMN "public"."slots"."title" IS 'action to perform during this slot';
+COMMENT ON COLUMN "public"."slot"."title" IS 'action to perform during this slot';
 
-COMMENT ON COLUMN "public"."slots"."venue_id" IS 'the id of the venue where the slot takes place';
+COMMENT ON COLUMN "public"."slot"."venue_id" IS 'the id of the venue where the slot takes place';
 
-COMMENT ON COLUMN "public"."slots"."needed_members_nb" IS 'the minimum number of members who must attend the slot';
+COMMENT ON COLUMN "public"."slot"."needed_members_nb" IS 'the minimum number of members who must attend the slot';
 
-INSERT INTO "slots" ("id", "title", "start", "end", "venue_id", "needed_members_nb") VALUES
+INSERT INTO "slot" ("id", "title", "start", "end", "venue_id", "needed_members_nb") VALUES
 (1,	'FAC - Accueil CYIM',	'2024-06-25 09:00:00',	'2024-06-25 09:30:00',	1,	2),
 (2,	'Rendez-vous général',	'2024-06-25 09:00:00',	'2024-06-25 10:00:00',	1,	10),
 (3,	'Départ vers FranceCar',	'2024-06-25 09:40:00',	'2024-06-25 10:00:00',	10,	2),
@@ -509,38 +509,38 @@ INSERT INTO "slots" ("id", "title", "start", "end", "venue_id", "needed_members_
 (99,	'Surveillance / aide',	'2024-06-28 15:45:00',	'2024-06-28 17:30:00',	8,	3),
 (100,	'Rangement',	'2024-06-28 17:30:00',	'2024-06-28 19:00:00',	3,	20);
 
-DROP TABLE IF EXISTS "slots_members";
-CREATE TABLE "public"."slots_members" (
+DROP TABLE IF EXISTS "slot__member";
+CREATE TABLE "public"."slot__member" (
     "slot_id" integer NOT NULL,
     "person_id" integer NOT NULL,
-    CONSTRAINT "u_slots_members" UNIQUE ("slot_id", "person_id")
+    CONSTRAINT "u_slot__member" UNIQUE ("slot_id", "person_id")
 ) WITH (oids = false);
 
-INSERT INTO "slots_members" ("slot_id", "person_id") VALUES
+INSERT INTO "slot__member" ("slot_id", "person_id") VALUES
 (44,	7),
 (44,	21),
 (44,	38),
 (44,	73);
 
-DROP TABLE IF EXISTS "venues";
-DROP SEQUENCE IF EXISTS venues_id_seq;
-CREATE SEQUENCE venues_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+DROP TABLE IF EXISTS "venue";
+DROP SEQUENCE IF EXISTS venue_id_seq;
+CREATE SEQUENCE venue_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
 
-CREATE TABLE "public"."venues" (
-    "id" integer DEFAULT nextval('venues_id_seq') NOT NULL,
+CREATE TABLE "public"."venue" (
+    "id" integer DEFAULT nextval('venue_id_seq') NOT NULL,
     "name" text NOT NULL,
     "rank" smallint NOT NULL,
     "bg_color_hex" character(6) NOT NULL,
-    CONSTRAINT "venues_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "venue_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
-COMMENT ON COLUMN "public"."venues"."id" IS 'system identifier';
+COMMENT ON COLUMN "public"."venue"."id" IS 'system identifier';
 
-COMMENT ON COLUMN "public"."venues"."rank" IS 'order of the venue in the agenda';
+COMMENT ON COLUMN "public"."venue"."rank" IS 'order of the venue in the agenda';
 
-COMMENT ON COLUMN "public"."venues"."bg_color_hex" IS 'background color when displayed';
+COMMENT ON COLUMN "public"."venue"."bg_color_hex" IS 'background color when displayed';
 
-INSERT INTO "venues" ("id", "name", "rank", "bg_color_hex") VALUES
+INSERT INTO "venue" ("id", "name", "rank", "bg_color_hex") VALUES
 (1,	'Accueil BreizhCamp',	1,	'005F73'),
 (2,	'Goodies',	2,	'2D8289'),
 (3,	'Hall et stands',	3,	'59A49F'),
@@ -553,14 +553,14 @@ INSERT INTO "venues" ("id", "name", "rank", "bg_color_hex") VALUES
 (10,	'Prestataires',	10,	'023E8A'),
 (11,	'Divers',	11,	'015199');
 
-ALTER TABLE ONLY "public"."events" ADD CONSTRAINT "fk_events_venues_id" FOREIGN KEY (venue_id) REFERENCES venues(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."event" ADD CONSTRAINT "fk_event_venue_id" FOREIGN KEY (venue_id) REFERENCES venue(id) NOT DEFERRABLE;
 
-ALTER TABLE ONLY "public"."events_speakers" ADD CONSTRAINT "fk_events_speakers_event_id" FOREIGN KEY (event_id) REFERENCES events(id) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."events_speakers" ADD CONSTRAINT "fk_events_speakers_person_id" FOREIGN KEY (person_id) REFERENCES people(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."event__speaker" ADD CONSTRAINT "fk_event__speaker_event_id" FOREIGN KEY (event_id) REFERENCES event(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."event__speaker" ADD CONSTRAINT "fk_event__speaker_person_id" FOREIGN KEY (person_id) REFERENCES person(id) NOT DEFERRABLE;
 
-ALTER TABLE ONLY "public"."slots" ADD CONSTRAINT "fk_slots_venues_id" FOREIGN KEY (venue_id) REFERENCES venues(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."slot" ADD CONSTRAINT "fk_slot_venue_id" FOREIGN KEY (venue_id) REFERENCES venue(id) NOT DEFERRABLE;
 
-ALTER TABLE ONLY "public"."slots_members" ADD CONSTRAINT "fk_slots_members_person_id" FOREIGN KEY (person_id) REFERENCES people(id) NOT DEFERRABLE;
-ALTER TABLE ONLY "public"."slots_members" ADD CONSTRAINT "slots_members_slot_id_fkey" FOREIGN KEY (slot_id) REFERENCES slots(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."slot__member" ADD CONSTRAINT "fk_slot__member_person_id" FOREIGN KEY (person_id) REFERENCES person(id) NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."slot__member" ADD CONSTRAINT "slot__member_slot_id_fkey" FOREIGN KEY (slot_id) REFERENCES slot(id) NOT DEFERRABLE;
 
 -- 2024-12-12 14:05:05.442117+00
