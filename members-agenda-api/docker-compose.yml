@@ -1,16 +1,16 @@
 networks:
-    adminer-network:
-        name: adminer-network
-        # use the bridge driver
-        driver: bridge
+  adminer-network:
+    name: adminer-network
+    # use the bridge driver
+    driver: bridge
 
 volumes:
-    dbdata:
-        driver: local
-        driver_opts:
-            type: 'none'
-            o: 'bind'
-            device: '${MEMBERS_AGENDA_DB_VOLUME:?error}'
+  dbdata:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '${MEMBERS_AGENDA_DB_VOLUME:?error}'
 
 services:
   postgres_server:
